@@ -1,5 +1,3 @@
-// http://www.gamasutra.com/view/feature/1630/breaking_down_breakout_system_and_.php
-
 canvas = document.getElementById('sandbox');
 ctx = canvas.getContext('2d');
 cw = canvas.width;
