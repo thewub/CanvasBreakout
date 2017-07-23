@@ -30,6 +30,7 @@ window.onload = function() {
     resetGame();
     document.addEventListener('mousemove', playerMove);
     document.addEventListener('mousedown', mouseDown);
+    document.addEventListener('keydown', keyDown);
     setInterval(game, 1000/60);
 };
 
@@ -345,6 +346,23 @@ function getMousePos(canvas, e) {
         x: (e.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
         y: (e.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
+}
+
+function keyDown(e) {
+    switch (e.keyCode) {
+        case KEY_LEFT:
+            if ( level > 1 ) {
+                level--;
+                initLevel();
+            }
+            break;
+        case KEY_RIGHT:
+            if ( level + 1 < levels.length ) {
+                level++;
+                initLevel();
+            }
+            break;
+    }
 }
 
 levels = [];
