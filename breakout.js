@@ -2,8 +2,8 @@ canvas = document.getElementById('sandbox');
 ctx = canvas.getContext('2d');
 cw = canvas.width;
 ch = canvas.height;
-borderSide = 20;
-borderTop = 20;
+borderSide = 19;
+borderTop = 19;
 
 balls = [];
 blocks = [];
@@ -114,28 +114,6 @@ function drawLoop() {
     ctx.fillStyle = gradients.background;
     ctx.fillRect(0, 0, cw, ch);
 
-    // Draw borders
-
-    ctx.fillStyle = gradients.borderLeft;
-    ctx.fillRect(0, 0, borderSide, ch);
-
-    ctx.fillStyle = gradients.borderRight;
-    ctx.fillRect(cw - borderSide, 0, borderSide, ch);
-
-    ctx.fillStyle = gradients.borderTop;
-    ctx.fillRect(0, 0, cw, borderTop);
-
-    // Text
-    ctx.font = '16px Consolas';
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = '#000';
-    ctx.textAlign = 'left';
-    ctx.fillText( 'Score: ' + score, borderSide, 4 );
-    ctx.textAlign = 'center';
-    ctx.fillText( 'Lives: ' + lives, cw/2, 4 );
-    ctx.textAlign = 'right';
-    ctx.fillText( 'Level: ' + level, cw - borderSide, 4 );
-
     // Draw particles
     for (i = particles.length - 1; i >= 0; i--) {
         var p = particles[i];
@@ -164,6 +142,27 @@ function drawLoop() {
     lingrad.addColorStop(1, '#666');
     ctx.fillStyle = lingrad;
     ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    // Draw borders
+    ctx.fillStyle = gradients.borderLeft;
+    ctx.fillRect(0, 0, borderSide, ch);
+
+    ctx.fillStyle = gradients.borderRight;
+    ctx.fillRect(cw - borderSide, 0, borderSide, ch);
+
+    ctx.fillStyle = gradients.borderTop;
+    ctx.fillRect(0, 0, cw, borderTop);
+
+    // Text
+    ctx.font = '16px Consolas';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'left';
+    ctx.fillText( 'Score: ' + score, borderSide, 4 );
+    ctx.textAlign = 'center';
+    ctx.fillText( 'Lives: ' + lives, cw/2, 4 );
+    ctx.textAlign = 'right';
+    ctx.fillText( 'Level: ' + level, cw - borderSide, 4 );
 }
 
 
