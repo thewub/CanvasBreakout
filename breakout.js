@@ -2,7 +2,7 @@ canvas = document.getElementById('sandbox');
 ctx = canvas.getContext('2d');
 cw = canvas.width;
 ch = canvas.height;
-borderSide = 5;
+borderSide = 20;
 borderTop = 20;
 
 balls = [];
@@ -22,9 +22,24 @@ bgImage.onload = function() {
     bgPattern = ctx.createPattern(bgImage, 'repeat');
 };
 
-bgGrad = ctx.createLinearGradient(0,0,0,ch);
-bgGrad.addColorStop(0, 'rgba(255,255,255,0.2)');
-bgGrad.addColorStop(1, 'rgba(255,255,255,0)');
+// Pre-prepare some unchanging gradients
+gradients = {};
+
+gradients.background = ctx.createLinearGradient(0,0,0,ch);
+gradients.background.addColorStop(0, 'rgba(255,255,255,0.2)');
+gradients.background.addColorStop(1, 'rgba(255,255,255,0)');
+
+gradients.borderTop = ctx.createLinearGradient(0, 0, 0, borderTop);
+gradients.borderTop.addColorStop(0, '#fff');
+gradients.borderTop.addColorStop(1, '#aaa');
+
+gradients.borderLeft = ctx.createLinearGradient(0, 0, borderSide, 0);
+gradients.borderLeft.addColorStop(0, '#fff');
+gradients.borderLeft.addColorStop(1, '#aaa');
+
+gradients.borderRight = ctx.createLinearGradient(cw, 0, cw - borderSide, 0);
+gradients.borderRight.addColorStop(0, '#fff');
+gradients.borderRight.addColorStop(1, '#aaa');
 
 window.onload = function() {
     resetGame();
@@ -96,21 +111,19 @@ function drawLoop() {
     // Clear screen
     ctx.fillStyle = bgPattern;
     ctx.fillRect(0, 0, cw, ch);
-    ctx.fillStyle = bgGrad;
+    ctx.fillStyle = gradients.background;
     ctx.fillRect(0, 0, cw, ch);
 
     // Draw borders
-    ctx.fillStyle = '#aaa';
+
+    ctx.fillStyle = gradients.borderLeft;
     ctx.fillRect(0, 0, borderSide, ch);
+
+    ctx.fillStyle = gradients.borderRight;
     ctx.fillRect(cw - borderSide, 0, borderSide, ch);
 
-    lingrad = ctx.createLinearGradient(0, 0, 0, borderTop);
-    lingrad.addColorStop(0, '#fff');
-    lingrad.addColorStop(1, '#aaa');
-    ctx.fillStyle = lingrad;
+    ctx.fillStyle = gradients.borderTop;
     ctx.fillRect(0, 0, cw, borderTop);
-    
-
 
     // Text
     ctx.font = '16px Consolas';
