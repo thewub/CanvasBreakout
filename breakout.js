@@ -97,10 +97,9 @@ function updateLoop() {
         p.y += p.vy;
         p.life--;
         if (p.life <= 0 || 
-            p.x < borderSide ||
-            p.x > cw - borderSide ||
-            p.y < borderTop ||
-            p.y > ch 
+            p.x < borderSide || p.x > cw - borderSide ||
+            p.y < borderTop  || p.y > ch  ||
+            ( p.x > player.x && p.x < player.x + player.width && p.y > player.y && p.y < player.y + player.height ) 
             ) {
             particles.splice(i, 1);
         }
