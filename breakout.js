@@ -315,18 +315,20 @@ function drawBlock(block) {
 }
 
 function drawBall(ball) {
-    var radgrad = ctx.createRadialGradient(
-        ball.x - ball.rad/2, ball.y - ball.rad/2, 0,
-        ball.x, ball.y, ball.rad
-    );
-    radgrad.addColorStop(0, '#fff');
-    radgrad.addColorStop(1, ball.clr);
+    if (ball.y < ch) {
+        var radgrad = ctx.createRadialGradient(
+            ball.x - ball.rad/2, ball.y - ball.rad/2, 0,
+            ball.x, ball.y, ball.rad
+        );
+        radgrad.addColorStop(0, '#fff');
+        radgrad.addColorStop(1, ball.clr);
 
-    ctx.fillStyle = radgrad;
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.rad, 0, 2*Math.PI);
-    ctx.closePath();
-    ctx.fill();
+        ctx.fillStyle = radgrad;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.rad, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.fill();
+    }
 }
 
 function mouseDown(e) {
