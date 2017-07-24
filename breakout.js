@@ -342,13 +342,15 @@ function mouseDown(e) {
 }
 
 function playerMove(e) {
-    var x = getMousePos(canvas, e).x;
-    if (x <= borderSide) {
-        player.x = borderSide;
-    } else if (x + player.width >= cw - borderSide) {
-        player.x = cw - borderSide - player.width;
-    } else {
-        player.x = x;
+    if (!paused) {
+        var x = getMousePos(canvas, e).x;
+        if (x <= borderSide) {
+            player.x = borderSide;
+        } else if (x + player.width >= cw - borderSide) {
+            player.x = cw - borderSide - player.width;
+        } else {
+            player.x = x;
+        }
     }
 }
 
