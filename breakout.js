@@ -359,7 +359,7 @@ function mouseDown(e) {
 
 function playerMove(e) {
     if (!paused) {
-        var x = getMousePos(canvas, e).x;
+        var x = getMousePos(canvas, e).x - player.width/2;
         if (x <= borderSide) {
             player.x = borderSide;
         } else if (x + player.width >= cw - borderSide) {
