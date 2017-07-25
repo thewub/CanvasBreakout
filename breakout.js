@@ -44,6 +44,17 @@ gradients.borderRight.addColorStop(1, '#aaa');
 window.onload = function() {
     resetGame();
     document.addEventListener('mousemove', playerMove);
+    document.addEventListener('touchmove', function (e) {
+        // translate to mouse event
+        var clkEvt = document.createEvent('MouseEvent');
+        clkEvt.initMouseEvent('mousemove', true, true, window, e.detail, 
+                     e.touches[0].screenX, e.touches[0].screenY, 
+                     e.touches[0].clientX, e.touches[0].clientY, 
+                     false, false, false, false, 
+                     0, null);
+        document.dispatchEvent(clkEvt);
+    }, false);
+
     document.addEventListener('mousedown', mouseDown);
     document.addEventListener('keydown', keyDown);
     setInterval(game, 1000/60);
