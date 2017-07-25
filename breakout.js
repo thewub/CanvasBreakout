@@ -150,7 +150,12 @@ function drawLoop() {
     ctx.fillRect(cw - borderSide, 0, borderSide, ch);
 
     ctx.fillStyle = gradients.borderTop;
-    ctx.fillRect(0, 0, cw, borderTop);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(cw, 0);
+    ctx.lineTo(cw-borderSide, borderTop);
+    ctx.lineTo(borderSide, borderTop);
+    ctx.fill();
 
     // Text
     ctx.font = '16px Consolas';
