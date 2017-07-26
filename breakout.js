@@ -69,10 +69,11 @@ function game() {
     drawLoop();
 
     if (paused) {
-        ctx.font = '20px Consolas';
+        ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.fillStyle = '#fff';
-        ctx.fillText( 'Paused', cw/2, ch/2);
+        ctx.fillText( 'Paused', cw/2, ch/2 - borderTop);
     }
 
 }
@@ -160,15 +161,15 @@ function drawLoop() {
     ctx.fill();
 
     // Text
-    ctx.font = '16px Consolas';
+    ctx.font = '16px Helvetica Neue, Helvetica, Arial, sans-serif';
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#000';
     ctx.textAlign = 'left';
-    ctx.fillText( 'Score: ' + score, borderSide, 4 );
+    ctx.fillText( 'Score: ' + score, borderSide, 1 );
     ctx.textAlign = 'center';
-    ctx.fillText( 'Lives: ' + lives, cw/2, 4 );
+    ctx.fillText( 'Lives: ' + lives, cw/2, 1 );
     ctx.textAlign = 'right';
-    ctx.fillText( 'Level: ' + level, cw - borderSide, 4 );
+    ctx.fillText( 'Level: ' + level, cw - borderSide, 1 );
 }
 
 
