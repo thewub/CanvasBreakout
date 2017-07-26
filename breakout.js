@@ -44,16 +44,7 @@ gradients.borderRight.addColorStop(1, '#aaa');
 window.onload = function() {
     resetGame();
     document.addEventListener('mousemove', playerMove);
-    document.addEventListener('touchmove', function (e) {
-        // translate to mouse event
-        var clkEvt = document.createEvent('MouseEvent');
-        clkEvt.initMouseEvent('mousemove', true, true, window, e.detail, 
-                     e.touches[0].screenX, e.touches[0].screenY, 
-                     e.touches[0].clientX, e.touches[0].clientY, 
-                     false, false, false, false, 
-                     0, null);
-        document.dispatchEvent(clkEvt);
-    }, false);
+    document.addEventListener('touchmove', playerMove);
 
     document.addEventListener('mousedown', mouseDown);
     document.addEventListener('keydown', keyDown);
@@ -359,7 +350,7 @@ function mouseDown(e) {
 
 function playerMove(e) {
     if (!paused) {
-        var x = getMousePos(canvas, e).x - player.width/2;
+        var x = getPos(canvas, e).x - player.width/2;
         if (x <= borderSide) {
             player.x = borderSide;
         } else if (x + player.width >= cw - borderSide) {
@@ -370,12 +361,20 @@ function playerMove(e) {
     }
 }
 
-function getMousePos(canvas, e) {
+function getPos(canvas, e) {
+    if ( e.type === 'touchmove' ) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
     /* Correct for canvas position/size */
     var rect = canvas.getBoundingClientRect();
     return {
-        x: (e.clientX - rect.left) / (rect.right - rect.left) * canvas.width,
-        y: (e.clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
+        x: (clientX - rect.left) / (rect.right - rect.left) * canvas.width,
+        y: (clientY - rect.top) / (rect.bottom - rect.top) * canvas.height
     };
 }
 
