@@ -445,6 +445,11 @@ function getPos(canvas, e) {
     };
 }
 
+function pickRandom(array) {
+    /* Pick a random item from an array */
+    return array[Math.floor(Math.random()*array.length)];
+}
+
 function keyDown(e) {
     switch (e.keyCode) {
         case KEY_LEFT:
