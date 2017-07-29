@@ -11,7 +11,8 @@ blocks = [];
 particles = [];
 
 colors = [
-    '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1'
+    '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
+    '#3a3795', '#8e3399'
 ];
 
 player = {};
@@ -463,11 +464,13 @@ function keyDown(e) {
 
 levels = [];
 levels[1] = [
-    { x: 140, y: 100, clr: colors[0] },
-    { x: 180, y: 100, clr: colors[1] },
-    { x: 220, y: 100, clr: colors[2] },
-    { x: 260, y: 100, clr: colors[3] },
-    { x: 300, y: 100, clr: colors[4] }
+    { x: 100, y: 100, clr: colors[0] },
+    { x: 140, y: 100, clr: colors[1] },
+    { x: 180, y: 100, clr: colors[2] },
+    { x: 220, y: 100, clr: colors[3] },
+    { x: 260, y: 100, clr: colors[4] },
+    { x: 300, y: 100, clr: colors[5] },
+    { x: 340, y: 100, clr: colors[6] }
 ];
 levels[2] = [
     { x:  80, y: 160, clr: colors[1] },
