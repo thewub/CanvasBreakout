@@ -116,7 +116,7 @@ function drawLoop() {
     }
 
     for (i = blocks.length - 1; i >= 0; i--) {
-        drawBlock(blocks[i]);
+        blocks[i].draw();
     }
 
     // Draw player
@@ -242,23 +242,12 @@ function updateBall(ball) {
                 ball.vx = -ball.vx;
             }
 
-            asplode(block.x + block.width/2, block.y + block.height/2, block.clr);
-            
-            blocks.splice(i, 1);
-            score += 10;
+            block.destroy();
         }
     }
 }
 
-function asplode(x, y, clr) {
-    for (var i = 0; i < 10; i++) {
-        particles.push(new Particle(
-            x, y, 
-            Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
-            clr, 60
-        ));
-    }
-}
+/* Particle */
 
 function Particle(x, y, vx, vy, clr, life) {
     this.x = x;
@@ -307,6 +296,47 @@ Particle.prototype.draw = function() {
     ctx.globalAlpha = 1;
 };
 
+/* Block */
+
+function Block(x, y, clr) {
+    this.x = x;
+    this.y = y;
+    this.clr = clr;
+    this.width = 40;
+    this.height = 20;
+}
+
+Block.prototype.destroy = function() {
+    // Asplode
+    for (var i = 0; i < 10; i++) {
+        particles.push(new Particle(
+            this.x + this.width/2, 
+            this.y + this.height/2, 
+            Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
+            this.clr, 60
+        ));
+    }
+
+    score += 10;
+
+    var j = blocks.indexOf(this);
+    blocks.splice(j, 1);
+};
+
+Block.prototype.draw = function() {
+    var blockGrad = ctx.createLinearGradient( 
+        this.x, this.y, this.x, this.y + 20
+    );
+    blockGrad.addColorStop(0, this.clr);
+    blockGrad.addColorStop(0.2, '#fff');
+    blockGrad.addColorStop(1, this.clr);
+    ctx.fillStyle = blockGrad;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    ctx.strokeStyle = '#000';
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+};
+
 function initLevel() {
     resetBlocks();
     resetBalls();
@@ -327,25 +357,9 @@ function resetBalls() {
 function resetBlocks() {
     blocks = [];
     for (var i = levels[level].length - 1; i >= 0; i--) {
-        blocks.push( levels[level][i] );
+        b = levels[level][i];
+        blocks.push(new Block(b.x, b.y, b.clr));
     }
-}
-
-function drawBlock(block) {
-    var lingrad = ctx.createLinearGradient( 
-        block.x, 
-        block.y, 
-        block.x, 
-        block.y + 20
-    );
-    lingrad.addColorStop(0, block.clr);
-    lingrad.addColorStop(0.2, '#fff');
-    lingrad.addColorStop(1, block.clr);
-    ctx.fillStyle = lingrad;
-    ctx.fillRect(block.x, block.y, block.width, block.height);
-
-    ctx.strokeStyle = '#000';
-    ctx.strokeRect(block.x, block.y, block.width, block.height);
 }
 
 function drawBall(ball) {
@@ -424,71 +438,71 @@ function keyDown(e) {
 
 levels = [];
 levels[1] = [
-    { x: 140, y: 100, width: 40, height: 20, clr: colors[0] },
-    { x: 180, y: 100, width: 40, height: 20, clr: colors[1] },
-    { x: 220, y: 100, width: 40, height: 20, clr: colors[2] },
-    { x: 260, y: 100, width: 40, height: 20, clr: colors[3] },
-    { x: 300, y: 100, width: 40, height: 20, clr: colors[4] }
+    { x: 140, y: 100, clr: colors[0] },
+    { x: 180, y: 100, clr: colors[1] },
+    { x: 220, y: 100, clr: colors[2] },
+    { x: 260, y: 100, clr: colors[3] },
+    { x: 300, y: 100, clr: colors[4] }
 ];
 levels[2] = [
-    { x:  80, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 120, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 160, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 200, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 240, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 280, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 320, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 360, y: 160, width: 40, height: 20, clr: colors[4] },
+    { x:  80, y: 160, clr: colors[1] },
+    { x: 120, y: 160, clr: colors[4] },
+    { x: 160, y: 160, clr: colors[1] },
+    { x: 200, y: 160, clr: colors[4] },
+    { x: 240, y: 160, clr: colors[1] },
+    { x: 280, y: 160, clr: colors[4] },
+    { x: 320, y: 160, clr: colors[1] },
+    { x: 360, y: 160, clr: colors[4] },
 
-    { x: 120, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 160, y: 140, width: 40, height: 20, clr: colors[4] },
-    { x: 200, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 240, y: 140, width: 40, height: 20, clr: colors[4] },
-    { x: 280, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 320, y: 140, width: 40, height: 20, clr: colors[4] },
+    { x: 120, y: 140, clr: colors[1] },
+    { x: 160, y: 140, clr: colors[4] },
+    { x: 200, y: 140, clr: colors[1] },
+    { x: 240, y: 140, clr: colors[4] },
+    { x: 280, y: 140, clr: colors[1] },
+    { x: 320, y: 140, clr: colors[4] },
 
-    { x: 160, y: 120, width: 40, height: 20, clr: colors[1] },
-    { x: 200, y: 120, width: 40, height: 20, clr: colors[4] },
-    { x: 240, y: 120, width: 40, height: 20, clr: colors[1] },
-    { x: 280, y: 120, width: 40, height: 20, clr: colors[4] },
+    { x: 160, y: 120, clr: colors[1] },
+    { x: 200, y: 120, clr: colors[4] },
+    { x: 240, y: 120, clr: colors[1] },
+    { x: 280, y: 120, clr: colors[4] },
 
-    { x: 200, y: 100, width: 40, height: 20, clr: colors[1] },
-    { x: 240, y: 100, width: 40, height: 20, clr: colors[4] },
+    { x: 200, y: 100, clr: colors[1] },
+    { x: 240, y: 100, clr: colors[4] },
 ];
 levels[3] = [
-    { x:  20, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x:  60, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 100, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 140, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 180, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 220, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 260, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 300, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 340, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 380, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 420, y: 20, width: 40, height: 20, clr: colors[2] },
+    { x:  20, y: 20, clr: colors[2] },
+    { x:  60, y: 20, clr: colors[2] },
+    { x: 100, y: 20, clr: colors[2] },
+    { x: 140, y: 20, clr: colors[2] },
+    { x: 180, y: 20, clr: colors[2] },
+    { x: 220, y: 20, clr: colors[2] },
+    { x: 260, y: 20, clr: colors[2] },
+    { x: 300, y: 20, clr: colors[2] },
+    { x: 340, y: 20, clr: colors[2] },
+    { x: 380, y: 20, clr: colors[2] },
+    { x: 420, y: 20, clr: colors[2] },
 
-    { x:  20, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x:  60, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 100, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 140, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 180, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 220, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 260, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 300, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 340, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 380, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 420, y: 40, width: 40, height: 20, clr: colors[1] },
+    { x:  20, y: 40, clr: colors[1] },
+    { x:  60, y: 40, clr: colors[1] },
+    { x: 100, y: 40, clr: colors[1] },
+    { x: 140, y: 40, clr: colors[1] },
+    { x: 180, y: 40, clr: colors[1] },
+    { x: 220, y: 40, clr: colors[1] },
+    { x: 260, y: 40, clr: colors[1] },
+    { x: 300, y: 40, clr: colors[1] },
+    { x: 340, y: 40, clr: colors[1] },
+    { x: 380, y: 40, clr: colors[1] },
+    { x: 420, y: 40, clr: colors[1] },
 
-    { x:  20, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x:  60, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 100, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 140, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 180, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 220, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 260, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 300, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 340, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 380, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 420, y: 60, width: 40, height: 20, clr: colors[0] },
+    { x:  20, y: 60, clr: colors[0] },
+    { x:  60, y: 60, clr: colors[0] },
+    { x: 100, y: 60, clr: colors[0] },
+    { x: 140, y: 60, clr: colors[0] },
+    { x: 180, y: 60, clr: colors[0] },
+    { x: 220, y: 60, clr: colors[0] },
+    { x: 260, y: 60, clr: colors[0] },
+    { x: 300, y: 60, clr: colors[0] },
+    { x: 340, y: 60, clr: colors[0] },
+    { x: 380, y: 60, clr: colors[0] },
+    { x: 420, y: 60, clr: colors[0] },
 ];
