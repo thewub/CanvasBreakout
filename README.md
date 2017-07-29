@@ -4,7 +4,7 @@ Just a quick exercise to teach myself HTML `<canvas>` and game development.
 
 ## Todo
 
-- [ ] Refactor code into classes
+- [x] Refactor code into classes
 - [ ] Powerups
 - [ ] Multiple hit blocks?
 - [x] Add more levels (and cheat mode for skipping?)
