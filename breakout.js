@@ -436,7 +436,17 @@ Powerup.prototype.draw = function() {
     switch( this.type ) {
         case 'test':
             ctx.fillStyle = '#fff';
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.beginPath();
+            ctx.moveTo(this.x + 4, this.y);
+            ctx.lineTo(this.x + this.width - 4, this.y);
+            ctx.lineTo(this.x + this.width, this.y + 4);
+            ctx.lineTo(this.x + this.width, this.y + this.height - 4);
+            ctx.lineTo(this.x + this.width - 4, this.y + this.height);
+            ctx.lineTo(this.x + 4, this.y + this.height);
+            ctx.lineTo(this.x, this.y + this.height - 4);
+            ctx.lineTo(this.x, this.y + 4);
+            ctx.closePath();
+            ctx.fill();
             break;
     }
 
