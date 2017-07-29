@@ -91,21 +91,11 @@ function updateLoop() {
     }
 
     for (i = balls.length - 1; i >= 0; i--) {
-        updateBall(balls[i]);
+        balls[i].update();
     }
 
     for (i = particles.length - 1; i >= 0; i--) {
-        p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-        if (p.life <= 0 || 
-            p.x < borderSide || p.x > cw - borderSide ||
-            p.y < borderTop  || p.y > ch  ||
-            ( p.x > player.x && p.x < player.x + player.width && p.y > player.y && p.y < player.y + player.height ) 
-            ) {
-            particles.splice(i, 1);
-        }
+        particles[i].update();
     }
 }
 
@@ -118,23 +108,15 @@ function drawLoop() {
 
     // Draw particles
     for (i = particles.length - 1; i >= 0; i--) {
-        var p = particles[i];
-        ctx.fillStyle = p.clr;
-        if ( p.life < 60 ) {
-            ctx.globalAlpha = p.life/60;
-        } else {
-            ctx.globalAlpha = 1;
-        }
-        ctx.fillRect( p.x-1, p.y-1, 3, 3);
+        particles[i].draw();
     }
-    ctx.globalAlpha = 1;
 
     for (i = balls.length - 1; i >= 0; i--) {
-        drawBall(balls[i]);
+        balls[i].draw();
     }
 
     for (i = blocks.length - 1; i >= 0; i--) {
-        drawBlock(blocks[i]);
+        blocks[i].draw();
     }
 
     // Draw player
@@ -180,45 +162,64 @@ function resetGame() {
     initLevel();
 }
 
+/* ---- Ball ---- */
 
-function updateBall(ball) {
-    if ( ball.stuck ) {
-        ball.x = player.x + player.width/2;
-        ball.y = player.y - ball.rad;
-        ball.vx = 0;
-        ball.vy = 0;
+function Ball(x, y, vx, vy, stuck) {
+    this.rad = 8;
+    this.clr = '#666';
+    if (stuck) {
+        this.stuck = true;
+        this.x = player.x + player.width/2;
+        this.y = player.y - this.rad;
+        this.vx = 0;
+        this.vy = 0;
+    } else {
+        this.stuck = false;
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+    }
+}
+
+Ball.prototype.update = function() {
+    if ( this.stuck ) {
+        this.x = player.x + player.width/2;
+        this.y = player.y - this.rad;
+        this.vx = 0;
+        this.vy = 0;
     }
 
-    ball.x += ball.vx;
-    ball.y += ball.vy;
+    this.x += this.vx;
+    this.y += this.vy;
 
     // Bounce off walls
-    if (ball.x - ball.rad <= borderSide) {
-        ball.x = borderSide + ball.rad;
-        ball.vx = -ball.vx;
+    if (this.x - this.rad <= borderSide) {
+        this.x = borderSide + this.rad;
+        this.vx = -this.vx;
     }
-    if (ball.x + ball.rad >= cw - borderSide) {
-        ball.x = cw - borderSide - ball.rad;
-        ball.vx = -ball.vx;
+    if (this.x + this.rad >= cw - borderSide) {
+        this.x = cw - borderSide - this.rad;
+        this.vx = -this.vx;
     }
-    if (ball.y - ball.rad <= borderTop) {
-        ball.y = borderTop + ball.rad;
-        ball.vy = -ball.vy;
+    if (this.y - this.rad <= borderTop) {
+        this.y = borderTop + this.rad;
+        this.vy = -this.vy;
     }
 
     // Bounce off paddle
-    if (ball.y + ball.rad >= player.y) {
-        if (ball.x > player.x && ball.x < player.x + player.width) {
-            ball.y = player.y - ball.rad;
-            ball.vy = -ball.vy;
-            dx = ball.x - (player.x + player.width/2);
-            ball.vx = dx * 0.15;
+    if (this.y + this.rad >= player.y) {
+        if (this.x > player.x && this.x < player.x + player.width) {
+            this.y = player.y - this.rad;
+            this.vy = -this.vy;
+            dx = this.x - (player.x + player.width/2);
+            this.vx = dx * 0.15;
         }
     }
 
     // Lost ball
-    if (ball.y + ball.rad >= ch) {
-        var i = balls.indexOf(ball);
+    if (this.y + this.rad >= ch) {
+        var i = balls.indexOf(this);
         balls.splice(i, 1);
 
         if ( balls.length === 0 ) {
@@ -232,54 +233,152 @@ function updateBall(ball) {
     }
 
     // Crazy ball trail
-    if (!ball.stuck) {
-        particles.push({ 
-            x: ball.x, y: ball.y,
-            vx: ball.vx * Math.random() * 0.5, 
-            vy: ball.vy * Math.random() * 0.5,
-            clr: colors[1], 
-            life: 60
-        });
+    if (!this.stuck) {
+        particles.push(new Particle( 
+            this.x, this.y,
+            this.vx * Math.random() * 0.5, 
+            this.vy * Math.random() * 0.5,
+            colors[1],
+            60
+        ));
     }
 
     // Collision with blocks
     // TODO: fix this for corner cases
     for (var i = blocks.length - 1; i >= 0; i--) {
         var block = blocks[i];
-        if (ball.x + ball.rad >= block.x && 
-            ball.x - ball.rad <= block.x + block.width &&
-            ball.y + ball.rad >= block.y &&
-            ball.y - ball.rad <= block.y + block.height) {
+        if (this.x + this.rad >= block.x && 
+            this.x - this.rad <= block.x + block.width &&
+            this.y + this.rad >= block.y &&
+            this.y - this.rad <= block.y + block.height) {
             
-            if (ball.x >= block.x && ball.x <= block.x + block.width) {
+            if (this.x >= block.x && this.x <= block.x + block.width) {
                 // Top or bottom hit
-                ball.vy = -ball.vy;
+                this.vy = -this.vy;
             }
-            if (ball.y >= block.y && ball.y <= block.y + block.height) {
+            if (this.y >= block.y && this.y <= block.y + block.height) {
                 // Side hit
-                ball.vx = -ball.vx;
+                this.vx = -this.vx;
             }
 
-            asplode(block.x + block.width/2, block.y + block.height/2, block.clr);
-            
-            blocks.splice(i, 1);
-            score += 10;
+            block.destroy();
         }
     }
+};
+
+Ball.prototype.launch = function() {
+    this.stuck = false;
+    this.vx = Math.random()*4 - 2;
+    this.vy = -5;
+};
+
+Ball.prototype.draw = function() {
+    if (this.y < ch) {
+        var radgrad = ctx.createRadialGradient(
+            this.x - this.rad/2, this.y - this.rad/2, 0,
+            this.x, this.y, this.rad
+        );
+        radgrad.addColorStop(0, '#fff');
+        radgrad.addColorStop(1, this.clr);
+
+        ctx.fillStyle = radgrad;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.rad, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.fill();
+    }
+};
+
+
+/* ---- Particle ---- */
+
+function Particle(x, y, vx, vy, clr, life) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.clr = clr;
+    this.life = life;
 }
 
-function asplode(x, y, clr) {
-    for (var i = 0; i < 10; i++) {
-        var p = {};
-        p.x = x;
-        p.y = y;
-        p.vx = Math.random()*2 - 1;
-        p.vy = Math.random()*2 - 1;
-        p.clr = clr;
-        p.life = 60;
-        particles.push(p);
+Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life--;
+    if ( this.life <= 0 ) {
+        // Expired
+        this.destroy();
     }
+    if ( this.x < borderSide || this.x > cw - borderSide ||
+         this.y < borderTop  || this.y > ch ) {
+        // Off edges
+        this.destroy();
+    }
+    if ( this.x > player.x && 
+         this.x < player.x + player.width && 
+         this.y > player.y && 
+         this.y < player.y + player.height ) {
+        // Hit player paddle
+        this.destroy();
+    }
+};
+
+Particle.prototype.destroy = function() {
+    var i = particles.indexOf(this);
+    particles.splice(i, 1);
+};
+
+Particle.prototype.draw = function() {
+    ctx.fillStyle = this.clr;
+    if ( this.life < 60 ) {
+        ctx.globalAlpha = this.life/60;
+    } else {
+        ctx.globalAlpha = 1;
+    }
+    ctx.fillRect( this.x - 1, this.y - 1, 3, 3);
+    ctx.globalAlpha = 1;
+};
+
+/* ---- Block ---- */
+
+function Block(x, y, clr) {
+    this.x = x;
+    this.y = y;
+    this.clr = clr;
+    this.width = 40;
+    this.height = 20;
 }
+
+Block.prototype.destroy = function() {
+    // Asplode
+    for (var i = 0; i < 10; i++) {
+        particles.push(new Particle(
+            this.x + this.width/2, 
+            this.y + this.height/2, 
+            Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
+            this.clr, 60
+        ));
+    }
+
+    score += 10;
+
+    var j = blocks.indexOf(this);
+    blocks.splice(j, 1);
+};
+
+Block.prototype.draw = function() {
+    var blockGrad = ctx.createLinearGradient( 
+        this.x, this.y, this.x, this.y + 20
+    );
+    blockGrad.addColorStop(0, this.clr);
+    blockGrad.addColorStop(0.2, '#fff');
+    blockGrad.addColorStop(1, this.clr);
+    ctx.fillStyle = blockGrad;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+
+    ctx.strokeStyle = '#000';
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
+};
 
 function initLevel() {
     resetBlocks();
@@ -294,57 +393,22 @@ function initLevel() {
 
 function resetBalls() {
     balls = [
-        { rad: 8, clr: '#666', stuck: true }
+        new Ball(0,0,0,0,stuck=true)
     ];
 }
 
 function resetBlocks() {
     blocks = [];
     for (var i = levels[level].length - 1; i >= 0; i--) {
-        blocks.push( levels[level][i] );
-    }
-}
-
-function drawBlock(block) {
-    var lingrad = ctx.createLinearGradient( 
-        block.x, 
-        block.y, 
-        block.x, 
-        block.y + 20
-    );
-    lingrad.addColorStop(0, block.clr);
-    lingrad.addColorStop(0.2, '#fff');
-    lingrad.addColorStop(1, block.clr);
-    ctx.fillStyle = lingrad;
-    ctx.fillRect(block.x, block.y, block.width, block.height);
-
-    ctx.strokeStyle = '#000';
-    ctx.strokeRect(block.x, block.y, block.width, block.height);
-}
-
-function drawBall(ball) {
-    if (ball.y < ch) {
-        var radgrad = ctx.createRadialGradient(
-            ball.x - ball.rad/2, ball.y - ball.rad/2, 0,
-            ball.x, ball.y, ball.rad
-        );
-        radgrad.addColorStop(0, '#fff');
-        radgrad.addColorStop(1, ball.clr);
-
-        ctx.fillStyle = radgrad;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.rad, 0, 2*Math.PI);
-        ctx.closePath();
-        ctx.fill();
+        b = levels[level][i];
+        blocks.push(new Block(b.x, b.y, b.clr));
     }
 }
 
 function mouseDown(e) {
     for (var i = balls.length - 1; i >= 0; i--) {
         if ( balls[i].stuck ) {
-            balls[i].stuck = false;
-            balls[i].vx = Math.random()*4 - 2;
-            balls[i].vy = -5;
+            balls[i].launch();
         }
     }
 }
@@ -398,71 +462,71 @@ function keyDown(e) {
 
 levels = [];
 levels[1] = [
-    { x: 140, y: 100, width: 40, height: 20, clr: colors[0] },
-    { x: 180, y: 100, width: 40, height: 20, clr: colors[1] },
-    { x: 220, y: 100, width: 40, height: 20, clr: colors[2] },
-    { x: 260, y: 100, width: 40, height: 20, clr: colors[3] },
-    { x: 300, y: 100, width: 40, height: 20, clr: colors[4] }
+    { x: 140, y: 100, clr: colors[0] },
+    { x: 180, y: 100, clr: colors[1] },
+    { x: 220, y: 100, clr: colors[2] },
+    { x: 260, y: 100, clr: colors[3] },
+    { x: 300, y: 100, clr: colors[4] }
 ];
 levels[2] = [
-    { x:  80, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 120, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 160, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 200, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 240, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 280, y: 160, width: 40, height: 20, clr: colors[4] },
-    { x: 320, y: 160, width: 40, height: 20, clr: colors[1] },
-    { x: 360, y: 160, width: 40, height: 20, clr: colors[4] },
+    { x:  80, y: 160, clr: colors[1] },
+    { x: 120, y: 160, clr: colors[4] },
+    { x: 160, y: 160, clr: colors[1] },
+    { x: 200, y: 160, clr: colors[4] },
+    { x: 240, y: 160, clr: colors[1] },
+    { x: 280, y: 160, clr: colors[4] },
+    { x: 320, y: 160, clr: colors[1] },
+    { x: 360, y: 160, clr: colors[4] },
 
-    { x: 120, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 160, y: 140, width: 40, height: 20, clr: colors[4] },
-    { x: 200, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 240, y: 140, width: 40, height: 20, clr: colors[4] },
-    { x: 280, y: 140, width: 40, height: 20, clr: colors[1] },
-    { x: 320, y: 140, width: 40, height: 20, clr: colors[4] },
+    { x: 120, y: 140, clr: colors[1] },
+    { x: 160, y: 140, clr: colors[4] },
+    { x: 200, y: 140, clr: colors[1] },
+    { x: 240, y: 140, clr: colors[4] },
+    { x: 280, y: 140, clr: colors[1] },
+    { x: 320, y: 140, clr: colors[4] },
 
-    { x: 160, y: 120, width: 40, height: 20, clr: colors[1] },
-    { x: 200, y: 120, width: 40, height: 20, clr: colors[4] },
-    { x: 240, y: 120, width: 40, height: 20, clr: colors[1] },
-    { x: 280, y: 120, width: 40, height: 20, clr: colors[4] },
+    { x: 160, y: 120, clr: colors[1] },
+    { x: 200, y: 120, clr: colors[4] },
+    { x: 240, y: 120, clr: colors[1] },
+    { x: 280, y: 120, clr: colors[4] },
 
-    { x: 200, y: 100, width: 40, height: 20, clr: colors[1] },
-    { x: 240, y: 100, width: 40, height: 20, clr: colors[4] },
+    { x: 200, y: 100, clr: colors[1] },
+    { x: 240, y: 100, clr: colors[4] },
 ];
 levels[3] = [
-    { x:  20, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x:  60, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 100, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 140, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 180, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 220, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 260, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 300, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 340, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 380, y: 20, width: 40, height: 20, clr: colors[2] },
-    { x: 420, y: 20, width: 40, height: 20, clr: colors[2] },
+    { x:  20, y: 20, clr: colors[2] },
+    { x:  60, y: 20, clr: colors[2] },
+    { x: 100, y: 20, clr: colors[2] },
+    { x: 140, y: 20, clr: colors[2] },
+    { x: 180, y: 20, clr: colors[2] },
+    { x: 220, y: 20, clr: colors[2] },
+    { x: 260, y: 20, clr: colors[2] },
+    { x: 300, y: 20, clr: colors[2] },
+    { x: 340, y: 20, clr: colors[2] },
+    { x: 380, y: 20, clr: colors[2] },
+    { x: 420, y: 20, clr: colors[2] },
 
-    { x:  20, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x:  60, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 100, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 140, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 180, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 220, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 260, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 300, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 340, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 380, y: 40, width: 40, height: 20, clr: colors[1] },
-    { x: 420, y: 40, width: 40, height: 20, clr: colors[1] },
+    { x:  20, y: 40, clr: colors[1] },
+    { x:  60, y: 40, clr: colors[1] },
+    { x: 100, y: 40, clr: colors[1] },
+    { x: 140, y: 40, clr: colors[1] },
+    { x: 180, y: 40, clr: colors[1] },
+    { x: 220, y: 40, clr: colors[1] },
+    { x: 260, y: 40, clr: colors[1] },
+    { x: 300, y: 40, clr: colors[1] },
+    { x: 340, y: 40, clr: colors[1] },
+    { x: 380, y: 40, clr: colors[1] },
+    { x: 420, y: 40, clr: colors[1] },
 
-    { x:  20, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x:  60, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 100, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 140, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 180, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 220, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 260, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 300, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 340, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 380, y: 60, width: 40, height: 20, clr: colors[0] },
-    { x: 420, y: 60, width: 40, height: 20, clr: colors[0] },
+    { x:  20, y: 60, clr: colors[0] },
+    { x:  60, y: 60, clr: colors[0] },
+    { x: 100, y: 60, clr: colors[0] },
+    { x: 140, y: 60, clr: colors[0] },
+    { x: 180, y: 60, clr: colors[0] },
+    { x: 220, y: 60, clr: colors[0] },
+    { x: 260, y: 60, clr: colors[0] },
+    { x: 300, y: 60, clr: colors[0] },
+    { x: 340, y: 60, clr: colors[0] },
+    { x: 380, y: 60, clr: colors[0] },
+    { x: 420, y: 60, clr: colors[0] },
 ];
