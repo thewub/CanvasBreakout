@@ -91,7 +91,7 @@ function updateLoop() {
     }
 
     for (i = balls.length - 1; i >= 0; i--) {
-        updateBall(balls[i]);
+        balls[i].update();
     }
 
     for (i = particles.length - 1; i >= 0; i--) {
@@ -162,91 +162,6 @@ function resetGame() {
     initLevel();
 }
 
-
-function updateBall(ball) {
-    if ( ball.stuck ) {
-        ball.x = player.x + player.width/2;
-        ball.y = player.y - ball.rad;
-        ball.vx = 0;
-        ball.vy = 0;
-    }
-
-    ball.x += ball.vx;
-    ball.y += ball.vy;
-
-    // Bounce off walls
-    if (ball.x - ball.rad <= borderSide) {
-        ball.x = borderSide + ball.rad;
-        ball.vx = -ball.vx;
-    }
-    if (ball.x + ball.rad >= cw - borderSide) {
-        ball.x = cw - borderSide - ball.rad;
-        ball.vx = -ball.vx;
-    }
-    if (ball.y - ball.rad <= borderTop) {
-        ball.y = borderTop + ball.rad;
-        ball.vy = -ball.vy;
-    }
-
-    // Bounce off paddle
-    if (ball.y + ball.rad >= player.y) {
-        if (ball.x > player.x && ball.x < player.x + player.width) {
-            ball.y = player.y - ball.rad;
-            ball.vy = -ball.vy;
-            dx = ball.x - (player.x + player.width/2);
-            ball.vx = dx * 0.15;
-        }
-    }
-
-    // Lost ball
-    if (ball.y + ball.rad >= ch) {
-        var i = balls.indexOf(ball);
-        balls.splice(i, 1);
-
-        if ( balls.length === 0 ) {
-            lives--;
-            if (lives === 0) {
-                window.alert('Game Over');
-                resetGame();
-            }
-            resetBalls();
-        }
-    }
-
-    // Crazy ball trail
-    if (!ball.stuck) {
-        particles.push(new Particle( 
-            ball.x, ball.y,
-            ball.vx * Math.random() * 0.5, 
-            ball.vy * Math.random() * 0.5,
-            colors[1],
-            60
-        ));
-    }
-
-    // Collision with blocks
-    // TODO: fix this for corner cases
-    for (var i = blocks.length - 1; i >= 0; i--) {
-        var block = blocks[i];
-        if (ball.x + ball.rad >= block.x && 
-            ball.x - ball.rad <= block.x + block.width &&
-            ball.y + ball.rad >= block.y &&
-            ball.y - ball.rad <= block.y + block.height) {
-            
-            if (ball.x >= block.x && ball.x <= block.x + block.width) {
-                // Top or bottom hit
-                ball.vy = -ball.vy;
-            }
-            if (ball.y >= block.y && ball.y <= block.y + block.height) {
-                // Side hit
-                ball.vx = -ball.vx;
-            }
-
-            block.destroy();
-        }
-    }
-}
-
 /* ---- Ball ---- */
 
 function Ball(x, y, vx, vy, stuck) {
@@ -266,6 +181,90 @@ function Ball(x, y, vx, vy, stuck) {
         this.vy = vy;
     }
 }
+
+Ball.prototype.update = function() {
+    if ( this.stuck ) {
+        this.x = player.x + player.width/2;
+        this.y = player.y - this.rad;
+        this.vx = 0;
+        this.vy = 0;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Bounce off walls
+    if (this.x - this.rad <= borderSide) {
+        this.x = borderSide + this.rad;
+        this.vx = -this.vx;
+    }
+    if (this.x + this.rad >= cw - borderSide) {
+        this.x = cw - borderSide - this.rad;
+        this.vx = -this.vx;
+    }
+    if (this.y - this.rad <= borderTop) {
+        this.y = borderTop + this.rad;
+        this.vy = -this.vy;
+    }
+
+    // Bounce off paddle
+    if (this.y + this.rad >= player.y) {
+        if (this.x > player.x && this.x < player.x + player.width) {
+            this.y = player.y - this.rad;
+            this.vy = -this.vy;
+            dx = this.x - (player.x + player.width/2);
+            this.vx = dx * 0.15;
+        }
+    }
+
+    // Lost ball
+    if (this.y + this.rad >= ch) {
+        var i = balls.indexOf(this);
+        balls.splice(i, 1);
+
+        if ( balls.length === 0 ) {
+            lives--;
+            if (lives === 0) {
+                window.alert('Game Over');
+                resetGame();
+            }
+            resetBalls();
+        }
+    }
+
+    // Crazy ball trail
+    if (!this.stuck) {
+        particles.push(new Particle( 
+            this.x, this.y,
+            this.vx * Math.random() * 0.5, 
+            this.vy * Math.random() * 0.5,
+            colors[1],
+            60
+        ));
+    }
+
+    // Collision with blocks
+    // TODO: fix this for corner cases
+    for (var i = blocks.length - 1; i >= 0; i--) {
+        var block = blocks[i];
+        if (this.x + this.rad >= block.x && 
+            this.x - this.rad <= block.x + block.width &&
+            this.y + this.rad >= block.y &&
+            this.y - this.rad <= block.y + block.height) {
+            
+            if (this.x >= block.x && this.x <= block.x + block.width) {
+                // Top or bottom hit
+                this.vy = -this.vy;
+            }
+            if (this.y >= block.y && this.y <= block.y + block.height) {
+                // Side hit
+                this.vx = -this.vx;
+            }
+
+            block.destroy();
+        }
+    }
+};
 
 Ball.prototype.draw = function() {
     if (this.y < ch) {
