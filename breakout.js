@@ -112,7 +112,7 @@ function drawLoop() {
     }
 
     for (i = balls.length - 1; i >= 0; i--) {
-        drawBall(balls[i]);
+        balls[i].draw();
     }
 
     for (i = blocks.length - 1; i >= 0; i--) {
@@ -247,7 +247,45 @@ function updateBall(ball) {
     }
 }
 
-/* Particle */
+/* ---- Ball ---- */
+
+function Ball(x, y, vx, vy, stuck) {
+    this.rad = 8;
+    this.clr = '#666';
+    if (stuck) {
+        this.stuck = true;
+        this.x = player.x + player.width/2;
+        this.y = player.y - this.rad;
+        this.vx = 0;
+        this.vy = 0;
+    } else {
+        this.stuck = false;
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+    }
+}
+
+Ball.prototype.draw = function() {
+    if (this.y < ch) {
+        var radgrad = ctx.createRadialGradient(
+            this.x - this.rad/2, this.y - this.rad/2, 0,
+            this.x, this.y, this.rad
+        );
+        radgrad.addColorStop(0, '#fff');
+        radgrad.addColorStop(1, this.clr);
+
+        ctx.fillStyle = radgrad;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.rad, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.fill();
+    }
+};
+
+
+/* ---- Particle ---- */
 
 function Particle(x, y, vx, vy, clr, life) {
     this.x = x;
@@ -296,7 +334,7 @@ Particle.prototype.draw = function() {
     ctx.globalAlpha = 1;
 };
 
-/* Block */
+/* ---- Block ---- */
 
 function Block(x, y, clr) {
     this.x = x;
@@ -350,7 +388,7 @@ function initLevel() {
 
 function resetBalls() {
     balls = [
-        { rad: 8, clr: '#666', stuck: true }
+        new Ball(0,0,0,0,stuck=true)
     ];
 }
 
@@ -359,23 +397,6 @@ function resetBlocks() {
     for (var i = levels[level].length - 1; i >= 0; i--) {
         b = levels[level][i];
         blocks.push(new Block(b.x, b.y, b.clr));
-    }
-}
-
-function drawBall(ball) {
-    if (ball.y < ch) {
-        var radgrad = ctx.createRadialGradient(
-            ball.x - ball.rad/2, ball.y - ball.rad/2, 0,
-            ball.x, ball.y, ball.rad
-        );
-        radgrad.addColorStop(0, '#fff');
-        radgrad.addColorStop(1, ball.clr);
-
-        ctx.fillStyle = radgrad;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.rad, 0, 2*Math.PI);
-        ctx.closePath();
-        ctx.fill();
     }
 }
 
