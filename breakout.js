@@ -190,6 +190,7 @@ Ball.prototype.update = function() {
         this.y = player.y - this.rad;
         this.vx = 0;
         this.vy = 0;
+        return;
     }
 
     this.x += this.vx;
@@ -235,15 +236,13 @@ Ball.prototype.update = function() {
     }
 
     // Crazy ball trail
-    if (!this.stuck) {
-        particles.push(new Particle( 
-            this.x, this.y,
-            this.vx * Math.random() * 0.5, 
-            this.vy * Math.random() * 0.5,
-            colors[1],
-            60
-        ));
-    }
+    particles.push(new Particle( 
+        this.x, this.y,
+        this.vx * Math.random() * 0.5, 
+        this.vy * Math.random() * 0.5,
+        colors[1],
+        60
+    ));
 
     // Collision with blocks
     // TODO: fix this for corner cases
