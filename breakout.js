@@ -411,7 +411,7 @@ Powerup.prototype.update = function() {
     if ( this.y > ch ) {
         this.destroy();
     }
-    if ( this.y > player.y &&
+    if ( this.y + this.height > player.y &&
          this.x + this.width > player.x &&
          this.x < player.x + player.width ) {
         this.get();
