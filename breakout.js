@@ -9,6 +9,7 @@ paused = false;
 balls = [];
 blocks = [];
 particles = [];
+powerups = [];
 
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
@@ -92,6 +93,10 @@ function updateLoop() {
     for (i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
     }
+
+    for (i = powerups.length - 1; i >= 0; i--) {
+        powerups[i].update();
+    }
 }
 
 function drawLoop() {
@@ -112,6 +117,10 @@ function drawLoop() {
 
     for (i = blocks.length - 1; i >= 0; i--) {
         blocks[i].draw();
+    }
+
+    for (i = powerups.length - 1; i >= 0; i--) {
+        powerups[i].draw();
     }
 
     // Draw player
@@ -233,6 +242,7 @@ Ball.prototype.update = function() {
                 resetGame();
             }
             resetBalls();
+            powerups = [];
         }
     }
 
@@ -364,6 +374,10 @@ Block.prototype.destroy = function() {
 
     score += 10;
 
+    if ( Math.random() > 0.5 ) {
+        powerups.push(new Powerup(this.x, this.y, 'test'));
+    }
+
     var j = blocks.indexOf(this);
     blocks.splice(j, 1);
 };
@@ -382,10 +396,59 @@ Block.prototype.draw = function() {
     ctx.strokeRect(this.x, this.y, this.width, this.height);
 };
 
+/* ---- Powerup ---- */
+
+function Powerup(x, y, type) {
+    this.x = x;
+    this.y = y;
+    this.width = 40;
+    this.height = 15;
+    this.type = type;
+}
+
+Powerup.prototype.update = function() {
+    this.y += 4;
+    if ( this.y > ch ) {
+        this.destroy();
+    }
+    if ( this.y > player.y && 
+         this.x + this.width > player.x &&
+         this.x < player.x + player.width ) {
+        this.get();
+    }
+};
+
+Powerup.prototype.get = function() {
+    switch( this.type ) {
+        case 'test':
+            score += 1000;
+            break;
+    }
+    this.destroy();
+};
+
+Powerup.prototype.destroy = function() {
+    var i = powerups.indexOf(this);
+    powerups.splice(i, 1);
+};
+
+Powerup.prototype.draw = function() {
+    switch( this.type ) {
+        case 'test':
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+            break;   
+    }
+
+};
+
+/* ---------------- */
+
 function initLevel() {
     resetBlocks();
     resetBalls();
     particles = [];
+    powerups = [];
     player.width = 80;
     player.height = 15;
     player.x = cw/2 - player.width/2;
