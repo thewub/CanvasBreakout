@@ -247,9 +247,9 @@ Ball.prototype.update = function() {
     }
 
     // Crazy ball trail
-    particles.push(new Particle( 
+    particles.push(new Particle(
         this.x, this.y,
-        this.vx * Math.random() * 0.5, 
+        this.vx * Math.random() * 0.5,
         this.vy * Math.random() * 0.5,
         colors[1],
         60
@@ -259,11 +259,11 @@ Ball.prototype.update = function() {
     // TODO: fix this for corner cases
     for (var i = blocks.length - 1; i >= 0; i--) {
         var block = blocks[i];
-        if (this.x + this.rad >= block.x && 
+        if (this.x + this.rad >= block.x &&
             this.x - this.rad <= block.x + block.width &&
             this.y + this.rad >= block.y &&
             this.y - this.rad <= block.y + block.height) {
-            
+
             if (this.x >= block.x && this.x <= block.x + block.width) {
                 // Top or bottom hit
                 this.vy = -this.vy;
@@ -326,9 +326,9 @@ Particle.prototype.update = function() {
         // Off edges
         this.destroy();
     }
-    if ( this.x > player.x && 
-         this.x < player.x + player.width && 
-         this.y > player.y && 
+    if ( this.x > player.x &&
+         this.x < player.x + player.width &&
+         this.y > player.y &&
          this.y < player.y + player.height ) {
         // Hit player paddle
         this.destroy();
@@ -365,8 +365,8 @@ Block.prototype.destroy = function() {
     // Asplode
     for (var i = 0; i < 10; i++) {
         particles.push(new Particle(
-            this.x + this.width/2, 
-            this.y + this.height/2, 
+            this.x + this.width/2,
+            this.y + this.height/2,
             Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
             this.clr, 60
         ));
@@ -383,7 +383,7 @@ Block.prototype.destroy = function() {
 };
 
 Block.prototype.draw = function() {
-    var blockGrad = ctx.createLinearGradient( 
+    var blockGrad = ctx.createLinearGradient(
         this.x, this.y, this.x, this.y + 20
     );
     blockGrad.addColorStop(0, this.clr);
@@ -411,7 +411,7 @@ Powerup.prototype.update = function() {
     if ( this.y > ch ) {
         this.destroy();
     }
-    if ( this.y > player.y && 
+    if ( this.y > player.y &&
          this.x + this.width > player.x &&
          this.x < player.x + player.width ) {
         this.get();
@@ -437,7 +437,7 @@ Powerup.prototype.draw = function() {
         case 'test':
             ctx.fillStyle = '#fff';
             ctx.fillRect(this.x, this.y, this.width, this.height);
-            break;   
+            break;
     }
 
 };
