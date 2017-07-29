@@ -266,6 +266,12 @@ Ball.prototype.update = function() {
     }
 };
 
+Ball.prototype.launch = function() {
+    this.stuck = false;
+    this.vx = Math.random()*4 - 2;
+    this.vy = -5;
+};
+
 Ball.prototype.draw = function() {
     if (this.y < ch) {
         var radgrad = ctx.createRadialGradient(
@@ -402,9 +408,7 @@ function resetBlocks() {
 function mouseDown(e) {
     for (var i = balls.length - 1; i >= 0; i--) {
         if ( balls[i].stuck ) {
-            balls[i].stuck = false;
-            balls[i].vx = Math.random()*4 - 2;
-            balls[i].vy = -5;
+            balls[i].launch();
         }
     }
 }
