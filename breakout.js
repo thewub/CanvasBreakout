@@ -95,17 +95,7 @@ function updateLoop() {
     }
 
     for (i = particles.length - 1; i >= 0; i--) {
-        p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life--;
-        if (p.life <= 0 || 
-            p.x < borderSide || p.x > cw - borderSide ||
-            p.y < borderTop  || p.y > ch  ||
-            ( p.x > player.x && p.x < player.x + player.width && p.y > player.y && p.y < player.y + player.height ) 
-            ) {
-            particles.splice(i, 1);
-        }
+        particles[i].update();
     }
 }
 
@@ -118,16 +108,8 @@ function drawLoop() {
 
     // Draw particles
     for (i = particles.length - 1; i >= 0; i--) {
-        var p = particles[i];
-        ctx.fillStyle = p.clr;
-        if ( p.life < 60 ) {
-            ctx.globalAlpha = p.life/60;
-        } else {
-            ctx.globalAlpha = 1;
-        }
-        ctx.fillRect( p.x-1, p.y-1, 3, 3);
+        particles[i].draw();
     }
-    ctx.globalAlpha = 1;
 
     for (i = balls.length - 1; i >= 0; i--) {
         drawBall(balls[i]);
@@ -233,13 +215,13 @@ function updateBall(ball) {
 
     // Crazy ball trail
     if (!ball.stuck) {
-        particles.push({ 
-            x: ball.x, y: ball.y,
-            vx: ball.vx * Math.random() * 0.5, 
-            vy: ball.vy * Math.random() * 0.5,
-            clr: colors[1], 
-            life: 60
-        });
+        particles.push(new Particle( 
+            ball.x, ball.y,
+            ball.vx * Math.random() * 0.5, 
+            ball.vy * Math.random() * 0.5,
+            colors[1],
+            60
+        ));
     }
 
     // Collision with blocks
@@ -270,16 +252,60 @@ function updateBall(ball) {
 
 function asplode(x, y, clr) {
     for (var i = 0; i < 10; i++) {
-        var p = {};
-        p.x = x;
-        p.y = y;
-        p.vx = Math.random()*2 - 1;
-        p.vy = Math.random()*2 - 1;
-        p.clr = clr;
-        p.life = 60;
-        particles.push(p);
+        particles.push(new Particle(
+            x, y, 
+            Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
+            clr, 60
+        ));
     }
 }
+
+function Particle(x, y, vx, vy, clr, life) {
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.clr = clr;
+    this.life = life;
+}
+
+Particle.prototype.update = function() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life--;
+    if ( this.life <= 0 ) {
+        // Expired
+        this.destroy();
+    }
+    if ( this.x < borderSide || this.x > cw - borderSide ||
+         this.y < borderTop  || this.y > ch ) {
+        // Off edges
+        this.destroy();
+    }
+    if ( this.x > player.x && 
+         this.x < player.x + player.width && 
+         this.y > player.y && 
+         this.y < player.y + player.height ) {
+        // Hit player paddle
+        this.destroy();
+    }
+};
+
+Particle.prototype.destroy = function() {
+    var i = particles.indexOf(this);
+    particles.splice(i, 1);
+};
+
+Particle.prototype.draw = function() {
+    ctx.fillStyle = this.clr;
+    if ( this.life < 60 ) {
+        ctx.globalAlpha = this.life/60;
+    } else {
+        ctx.globalAlpha = 1;
+    }
+    ctx.fillRect( this.x - 1, this.y - 1, 3, 3);
+    ctx.globalAlpha = 1;
+};
 
 function initLevel() {
     resetBlocks();
