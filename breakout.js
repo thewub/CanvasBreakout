@@ -70,14 +70,6 @@ function game() {
 
     drawLoop();
 
-    if (paused) {
-        ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#fff';
-        ctx.fillText( 'Paused', cw/2, ch/2 - borderTop);
-    }
-
 }
 
 function updateLoop() {
@@ -154,6 +146,14 @@ function drawLoop() {
     ctx.fillText( 'Lives: ' + lives, cw/2, 1 );
     ctx.textAlign = 'right';
     ctx.fillText( 'Level: ' + level, cw - borderSide, 1 );
+
+    if (paused) {
+        ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff';
+        ctx.fillText( 'Paused', cw/2, ch/2 - borderTop);
+    }
 }
 
 
