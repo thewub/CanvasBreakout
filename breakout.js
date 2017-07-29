@@ -4,6 +4,7 @@ cw = canvas.width;
 ch = canvas.height;
 borderSide = 19;
 borderTop = 19;
+paused = false;
 
 balls = [];
 blocks = [];
@@ -48,6 +49,7 @@ window.onload = function() {
 
     document.addEventListener('mousedown', mouseDown);
     document.addEventListener('keydown', keyDown);
+    initLevel();
     setInterval(game, 1000/60);
 };
 
