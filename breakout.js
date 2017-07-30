@@ -11,6 +11,8 @@ blocks = [];
 particles = [];
 powerups = [];
 
+powerupTypes = ['100', '1000'];
+
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
     '#3a3795', '#8e3399'
@@ -375,7 +377,7 @@ Block.prototype.destroy = function() {
     score += 10;
 
     if ( Math.random() > 0.5 ) {
-        powerups.push(new Powerup(this.x, this.y, 'test'));
+        powerups.push(new Powerup(this.x, this.y, pickRandom(powerupTypes)));
     }
 
     var j = blocks.indexOf(this);
@@ -420,7 +422,10 @@ Powerup.prototype.update = function() {
 
 Powerup.prototype.get = function() {
     switch( this.type ) {
-        case 'test':
+        case '100':
+            score += 100;
+            break;
+        case '1000':
             score += 1000;
             break;
     }
@@ -433,22 +438,44 @@ Powerup.prototype.destroy = function() {
 };
 
 Powerup.prototype.draw = function() {
+
+    var powerupGrad = ctx.createLinearGradient(
+        this.x, this.y, this.x + this.width, this.y + this.height
+    );
+    var clr;
+
     switch( this.type ) {
-        case 'test':
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.moveTo(this.x + 4, this.y);
-            ctx.lineTo(this.x + this.width - 4, this.y);
-            ctx.lineTo(this.x + this.width, this.y + 4);
-            ctx.lineTo(this.x + this.width, this.y + this.height - 4);
-            ctx.lineTo(this.x + this.width - 4, this.y + this.height);
-            ctx.lineTo(this.x + 4, this.y + this.height);
-            ctx.lineTo(this.x, this.y + this.height - 4);
-            ctx.lineTo(this.x, this.y + 4);
-            ctx.closePath();
-            ctx.fill();
+        case '100':
+            clr = colors[2];
+            break;
+        case '1000':
+            clr = colors[4];
             break;
     }
+
+    powerupGrad.addColorStop(0, clr);
+    powerupGrad.addColorStop(0.5, '#fff');
+    powerupGrad.addColorStop(1, clr);
+    ctx.fillStyle = powerupGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(this.x + 4, this.y);
+    ctx.lineTo(this.x + this.width - 4, this.y);
+    ctx.lineTo(this.x + this.width, this.y + 4);
+    ctx.lineTo(this.x + this.width, this.y + this.height - 4);
+    ctx.lineTo(this.x + this.width - 4, this.y + this.height);
+    ctx.lineTo(this.x + 4, this.y + this.height);
+    ctx.lineTo(this.x, this.y + this.height - 4);
+    ctx.lineTo(this.x, this.y + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.stroke();
+    ctx.font = '12px Helvetica Neue, Helvetica, Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#000';
+    ctx.fillText( this.type, this.x + this.width/2, this.y + this.height/2 );
 
 };
 
