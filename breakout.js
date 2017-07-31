@@ -377,7 +377,7 @@ Block.prototype.destroy = function() {
     score += 10;
 
     if ( Math.random() > 0.5 ) {
-        powerups.push(new Powerup(this.x, this.y, pickRandom(powerupTypes)));
+        powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
     }
 
     var j = blocks.indexOf(this);
@@ -403,7 +403,7 @@ Block.prototype.draw = function() {
 function Powerup(x, y, type) {
     this.x = x;
     this.y = y;
-    this.width = 40;
+    this.width = 30;
     this.height = 15;
     this.type = type;
 }
