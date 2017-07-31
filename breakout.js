@@ -11,7 +11,7 @@ blocks = [];
 particles = [];
 powerups = [];
 
-powerupTypes = ['100', '1000', 'MUL'];
+powerupTypes = ['100', '1000', '1UP', 'MUL'];
 
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
@@ -428,6 +428,9 @@ Powerup.prototype.get = function() {
         case '1000':
             score += 1000;
             break;
+        case '1UP':
+            lives++;
+            break;
         case 'MUL':
             /* Multiball */
             for (var i = balls.length - 1; i >= 0; i--) {
@@ -469,6 +472,9 @@ Powerup.prototype.draw = function() {
             break;
         case '1000':
             clr = colors[4];
+            break;
+        case '1UP':
+            clr = colors[3];
             break;
         default:
             clr = colors[0];
