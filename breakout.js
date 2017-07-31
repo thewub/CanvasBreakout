@@ -11,7 +11,7 @@ blocks = [];
 particles = [];
 powerups = [];
 
-powerupTypes = ['100', '1000'];
+powerupTypes = ['100', '1000', 'MUL'];
 
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
@@ -428,6 +428,25 @@ Powerup.prototype.get = function() {
         case '1000':
             score += 1000;
             break;
+        case 'MUL':
+            /* Multiball */
+            for (var i = balls.length - 1; i >= 0; i--) {
+                balls.push(new Ball(
+                    balls[i].x,
+                    balls[i].y,
+                    balls[i].vx * 0.8,
+                    balls[i].vy,
+                    stuck=false
+                ));
+                balls.push(new Ball(
+                    balls[i].x,
+                    balls[i].y,
+                    balls[i].vx * 1.2,
+                    balls[i].vy,
+                    stuck=false
+                ));
+            }
+            break;
     }
     this.destroy();
 };
@@ -450,6 +469,9 @@ Powerup.prototype.draw = function() {
             break;
         case '1000':
             clr = colors[4];
+            break;
+        default:
+            clr = colors[0];
             break;
     }
 
