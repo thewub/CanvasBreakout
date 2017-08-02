@@ -9,6 +9,9 @@ paused = false;
 balls = [];
 blocks = [];
 particles = [];
+powerups = [];
+
+powerupTypes = ['100', '1000', '1UP', 'MUL'];
 
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
@@ -92,6 +95,10 @@ function updateLoop() {
     for (i = particles.length - 1; i >= 0; i--) {
         particles[i].update();
     }
+
+    for (i = powerups.length - 1; i >= 0; i--) {
+        powerups[i].update();
+    }
 }
 
 function drawLoop() {
@@ -112,6 +119,10 @@ function drawLoop() {
 
     for (i = blocks.length - 1; i >= 0; i--) {
         blocks[i].draw();
+    }
+
+    for (i = powerups.length - 1; i >= 0; i--) {
+        powerups[i].draw();
     }
 
     // Draw player
@@ -233,13 +244,14 @@ Ball.prototype.update = function() {
                 resetGame();
             }
             resetBalls();
+            powerups = [];
         }
     }
 
     // Crazy ball trail
-    particles.push(new Particle( 
+    particles.push(new Particle(
         this.x, this.y,
-        this.vx * Math.random() * 0.5, 
+        this.vx * Math.random() * 0.5,
         this.vy * Math.random() * 0.5,
         colors[1],
         60
@@ -249,11 +261,11 @@ Ball.prototype.update = function() {
     // TODO: fix this for corner cases
     for (var i = blocks.length - 1; i >= 0; i--) {
         var block = blocks[i];
-        if (this.x + this.rad >= block.x && 
+        if (this.x + this.rad >= block.x &&
             this.x - this.rad <= block.x + block.width &&
             this.y + this.rad >= block.y &&
             this.y - this.rad <= block.y + block.height) {
-            
+
             if (this.x >= block.x && this.x <= block.x + block.width) {
                 // Top or bottom hit
                 this.vy = -this.vy;
@@ -316,9 +328,9 @@ Particle.prototype.update = function() {
         // Off edges
         this.destroy();
     }
-    if ( this.x > player.x && 
-         this.x < player.x + player.width && 
-         this.y > player.y && 
+    if ( this.x > player.x &&
+         this.x < player.x + player.width &&
+         this.y > player.y &&
          this.y < player.y + player.height ) {
         // Hit player paddle
         this.destroy();
@@ -355,8 +367,8 @@ Block.prototype.destroy = function() {
     // Asplode
     for (var i = 0; i < 10; i++) {
         particles.push(new Particle(
-            this.x + this.width/2, 
-            this.y + this.height/2, 
+            this.x + this.width/2,
+            this.y + this.height/2,
             Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
             this.clr, 60
         ));
@@ -364,12 +376,16 @@ Block.prototype.destroy = function() {
 
     score += 10;
 
+    if ( Math.random() > 0.8 ) {
+        powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
+    }
+
     var j = blocks.indexOf(this);
     blocks.splice(j, 1);
 };
 
 Block.prototype.draw = function() {
-    var blockGrad = ctx.createLinearGradient( 
+    var blockGrad = ctx.createLinearGradient(
         this.x, this.y, this.x, this.y + 20
     );
     blockGrad.addColorStop(0, this.clr);
@@ -382,10 +398,122 @@ Block.prototype.draw = function() {
     ctx.strokeRect(this.x, this.y, this.width, this.height);
 };
 
+/* ---- Powerup ---- */
+
+function Powerup(x, y, type) {
+    this.x = x;
+    this.y = y;
+    this.width = 30;
+    this.height = 15;
+    this.type = type;
+}
+
+Powerup.prototype.update = function() {
+    this.y += 4;
+    if ( this.y > ch ) {
+        this.destroy();
+    }
+    if ( this.y + this.height > player.y &&
+         this.x + this.width > player.x &&
+         this.x < player.x + player.width ) {
+        this.get();
+    }
+};
+
+Powerup.prototype.get = function() {
+    switch( this.type ) {
+        case '100':
+            score += 100;
+            break;
+        case '1000':
+            score += 1000;
+            break;
+        case '1UP':
+            lives++;
+            break;
+        case 'MUL':
+            /* Multiball */
+            for (var i = balls.length - 1; i >= 0; i--) {
+                balls.push(new Ball(
+                    balls[i].x,
+                    balls[i].y,
+                    balls[i].vx * 0.8,
+                    balls[i].vy,
+                    stuck=false
+                ));
+                balls.push(new Ball(
+                    balls[i].x,
+                    balls[i].y,
+                    balls[i].vx * 1.2,
+                    balls[i].vy,
+                    stuck=false
+                ));
+            }
+            break;
+    }
+    this.destroy();
+};
+
+Powerup.prototype.destroy = function() {
+    var i = powerups.indexOf(this);
+    powerups.splice(i, 1);
+};
+
+Powerup.prototype.draw = function() {
+
+    var powerupGrad = ctx.createLinearGradient(
+        this.x, this.y, this.x + this.width, this.y + this.height
+    );
+    var clr;
+
+    switch( this.type ) {
+        case '100':
+            clr = colors[2];
+            break;
+        case '1000':
+            clr = colors[4];
+            break;
+        case '1UP':
+            clr = colors[3];
+            break;
+        default:
+            clr = colors[0];
+            break;
+    }
+
+    powerupGrad.addColorStop(0, clr);
+    powerupGrad.addColorStop(0.5, '#fff');
+    powerupGrad.addColorStop(1, clr);
+    ctx.fillStyle = powerupGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(this.x + 4, this.y);
+    ctx.lineTo(this.x + this.width - 4, this.y);
+    ctx.lineTo(this.x + this.width, this.y + 4);
+    ctx.lineTo(this.x + this.width, this.y + this.height - 4);
+    ctx.lineTo(this.x + this.width - 4, this.y + this.height);
+    ctx.lineTo(this.x + 4, this.y + this.height);
+    ctx.lineTo(this.x, this.y + this.height - 4);
+    ctx.lineTo(this.x, this.y + 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.stroke();
+    ctx.font = '12px Helvetica Neue, Helvetica, Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#000';
+    ctx.fillText( this.type, this.x + this.width/2, this.y + this.height/2 );
+
+};
+
+/* ---------------- */
+
 function initLevel() {
     resetBlocks();
     resetBalls();
     particles = [];
+    powerups = [];
     player.width = 80;
     player.height = 15;
     player.x = cw/2 - player.width/2;
