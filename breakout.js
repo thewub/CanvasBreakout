@@ -251,10 +251,10 @@ Ball.prototype.update = function() {
     // Crazy ball trail
     particles.push(new Particle(
         this.x, this.y,
-        this.vx * Math.random() * 0.5,
-        this.vy * Math.random() * 0.5,
-        colors[1],
-        60
+        this.vx * Math.random() * 0.25,
+        this.vy * Math.random() * 0.25,
+        '#aaa',
+        40
     ));
 
     // Collision with blocks
