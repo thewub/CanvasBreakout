@@ -35,16 +35,19 @@ gradients.background.addColorStop(0, 'rgba(255,255,255,0.2)');
 gradients.background.addColorStop(1, 'rgba(255,255,255,0)');
 
 gradients.borderTop = ctx.createLinearGradient(0, 0, 0, borderTop);
-gradients.borderTop.addColorStop(0, '#fff');
-gradients.borderTop.addColorStop(1, '#aaa');
+gradients.borderTop.addColorStop(0, '#666');
+gradients.borderTop.addColorStop(0.2, '#fff');
+gradients.borderTop.addColorStop(1, '#666');
 
 gradients.borderLeft = ctx.createLinearGradient(0, 0, borderSide, 0);
-gradients.borderLeft.addColorStop(0, '#fff');
-gradients.borderLeft.addColorStop(1, '#aaa');
+gradients.borderLeft.addColorStop(0, '#666');
+gradients.borderLeft.addColorStop(0.2, '#fff');
+gradients.borderLeft.addColorStop(1, '#666');
 
 gradients.borderRight = ctx.createLinearGradient(cw, 0, cw - borderSide, 0);
-gradients.borderRight.addColorStop(0, '#fff');
-gradients.borderRight.addColorStop(1, '#aaa');
+gradients.borderRight.addColorStop(0, '#666');
+gradients.borderRight.addColorStop(0.2, '#fff');
+gradients.borderRight.addColorStop(1, '#666');
 
 window.onload = function() {
     resetGame();
