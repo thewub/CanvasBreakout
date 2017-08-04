@@ -236,7 +236,7 @@ Ball.prototype.update = function() {
     }
 
     // Lost ball
-    if (this.y + this.rad >= ch) {
+    if (this.y >= ch) {
         var i = balls.indexOf(this);
         balls.splice(i, 1);
 
