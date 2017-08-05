@@ -11,7 +11,12 @@ blocks = [];
 particles = [];
 powerups = [];
 
-powerupTypes = ['100', '1000', '1UP', 'MUL'];
+powerupTypes = ['100', '1000', '1UP', 'MUL', '<->'];
+
+powerTimers = {
+    'widePaddle' : 0,
+    'powerBall' : 0
+};
 
 colors = [
     '#c53538', '#ba7a60', '#c5a583', '#49a8b6', '#0a7dc1',
@@ -101,6 +106,17 @@ function updateLoop() {
 
     for (i = powerups.length - 1; i >= 0; i--) {
         powerups[i].update();
+    }
+
+    updatePowers();
+}
+
+function updatePowers() {
+    if (powerTimers.widePaddle > 0) {
+        powerTimers.widePaddle--;
+        player.width = 120;
+    } else {
+        player.width = 80;
     }
 }
 
@@ -379,7 +395,7 @@ Block.prototype.destroy = function() {
 
     score += 10;
 
-    if ( Math.random() > 0.8 ) {
+    if ( Math.random() > 0.2 ) {
         powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
     }
 
@@ -452,6 +468,9 @@ Powerup.prototype.get = function() {
                     stuck=false
                 ));
             }
+            break;
+        case '<->':
+            powerTimers.widePaddle = 60 * 10;
             break;
     }
     this.destroy();
