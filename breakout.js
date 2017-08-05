@@ -410,7 +410,7 @@ Block.prototype.destroy = function() {
 
     score += 10;
 
-    if ( Math.random() > 0.2 ) {
+    if ( Math.random() > 0.8 ) {
         powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
     }
 
