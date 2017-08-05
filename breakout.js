@@ -11,7 +11,7 @@ blocks = [];
 particles = [];
 powerups = [];
 
-powerupTypes = ['100', '1000', '1UP', 'MUL', '<->'];
+powerupTypes = ['100', '1000', '1UP', 'MUL', '<->', 'POW'];
 
 powerTimers = {
     'widePaddle' : 0,
@@ -117,6 +117,9 @@ function updatePowers() {
         player.width = 120;
     } else {
         player.width = 80;
+    }
+    if (powerTimers.powerBall > 0) {
+        powerTimers.powerBall--;
     }
 }
 
@@ -285,13 +288,15 @@ Ball.prototype.update = function() {
             this.y + this.rad >= block.y &&
             this.y - this.rad <= block.y + block.height) {
 
-            if (this.x >= block.x && this.x <= block.x + block.width) {
-                // Top or bottom hit
-                this.vy = -this.vy;
-            }
-            if (this.y >= block.y && this.y <= block.y + block.height) {
-                // Side hit
-                this.vx = -this.vx;
+            if (powerTimers.powerBall <= 0) {
+                if (this.x >= block.x && this.x <= block.x + block.width) {
+                    // Top or bottom hit
+                    this.vy = -this.vy;
+                }
+                if (this.y >= block.y && this.y <= block.y + block.height) {
+                    // Side hit
+                    this.vx = -this.vx;
+                }
             }
 
             block.destroy();
@@ -312,7 +317,11 @@ Ball.prototype.draw = function() {
             this.x, this.y, this.rad
         );
         radgrad.addColorStop(0, '#fff');
-        radgrad.addColorStop(1, this.clr);
+        if (powerTimers.powerBall > 0) {
+            radgrad.addColorStop(1, '#f55');
+        } else {
+            radgrad.addColorStop(1, this.clr);
+        }
 
         ctx.fillStyle = radgrad;
         ctx.beginPath();
@@ -471,6 +480,9 @@ Powerup.prototype.get = function() {
             break;
         case '<->':
             powerTimers.widePaddle = 60 * 10;
+            break;
+        case 'POW':
+            powerTimers.powerBall = 60 * 10;
             break;
     }
     this.destroy();
