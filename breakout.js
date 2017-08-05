@@ -11,11 +11,12 @@ blocks = [];
 particles = [];
 powerups = [];
 
-powerupTypes = ['100', '1000', '1UP', 'MUL', '<->', 'POW'];
+powerupTypes = ['100', '1000', '1UP', 'MUL', '<->', 'POW', 'STK'];
 
 powerTimers = {
     'widePaddle' : 0,
-    'powerBall' : 0
+    'powerBall' : 0,
+    'stickyPaddle' : 0
 };
 
 colors = [
@@ -121,6 +122,9 @@ function updatePowers() {
     if (powerTimers.powerBall > 0) {
         powerTimers.powerBall--;
     }
+    if (powerTimers.stickyPaddle > 0) {
+        powerTimers.stickyPaddle--;
+    }
 }
 
 function resetPowers() {
@@ -159,6 +163,11 @@ function drawLoop() {
     lingrad.addColorStop(1, '#666');
     ctx.fillStyle = lingrad;
     ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    if (powerTimers.stickyPaddle > 0) {
+        ctx.fillStyle = colors[3];
+        ctx.fillRect(player.x, player.y, player.width, 4);
+    }
 
     // Draw borders
     ctx.fillStyle = gradients.borderLeft;
@@ -252,10 +261,14 @@ Ball.prototype.update = function() {
     // Bounce off paddle
     if (this.y + this.rad >= player.y) {
         if (this.x > player.x && this.x < player.x + player.width) {
-            this.y = player.y - this.rad;
-            this.vy = -this.vy;
-            dx = this.x - (player.x + player.width/2);
-            this.vx = dx * 0.15;
+            if (powerTimers.stickyPaddle > 0) {
+                this.stuck = true;
+            } else {
+                this.y = player.y - this.rad;
+                this.vy = -this.vy;
+                dx = this.x - (player.x + player.width/2);
+                this.vx = dx * 0.15;
+            }
         }
     }
 
@@ -490,6 +503,9 @@ Powerup.prototype.get = function() {
         case 'POW':
             powerTimers.powerBall = 60 * 10;
             break;
+        case 'STK':
+            powerTimers.stickyPaddle = 60 * 10;
+            break;
     }
     this.destroy();
 };
@@ -514,6 +530,9 @@ Powerup.prototype.draw = function() {
             clr = colors[4];
             break;
         case '1UP':
+            clr = colors[3];
+            break;
+        case 'STK':
             clr = colors[3];
             break;
         default:
