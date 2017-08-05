@@ -130,6 +130,7 @@ function updatePowers() {
 function resetPowers() {
     powerTimers.widePaddle = 0;
     powerTimers.powerBall = 0;
+    powerTimers.stickyPaddle = 0;
 }
 
 function drawLoop() {
