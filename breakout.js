@@ -123,6 +123,11 @@ function updatePowers() {
     }
 }
 
+function resetPowers() {
+    powerTimers.widePaddle = 0;
+    powerTimers.powerBall = 0;
+}
+
 function drawLoop() {
     // Clear screen
     ctx.fillStyle = bgPattern;
@@ -267,6 +272,7 @@ Ball.prototype.update = function() {
             }
             resetBalls();
             powerups = [];
+            resetPowers();
         }
     }
 
@@ -548,6 +554,7 @@ function initLevel() {
     resetBalls();
     particles = [];
     powerups = [];
+    resetPowers();
     player.width = 80;
     player.height = 15;
     player.x = cw/2 - player.width/2;
