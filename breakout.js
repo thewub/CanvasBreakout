@@ -469,8 +469,8 @@ Block.prototype.draw = function() {
 function Powerup(x, y, type) {
     this.x = x;
     this.y = y;
-    this.width = 30;
-    this.height = 15;
+    this.width = 35;
+    this.height = 20;
     this.type = type;
 }
 
@@ -524,22 +524,22 @@ Powerup.prototype.destroy = function() {
 Powerup.prototype.draw = function() {
 
     var powerupGrad = ctx.createLinearGradient(
-        this.x, this.y, this.x + this.width, this.y + this.height
+        this.x, this.y, this.x, this.y + this.height
     );
     var clr;
 
     switch( this.type ) {
         case '100':
-            clr = colors[2];
+            clr = colors[4];
             break;
         case '1000':
             clr = colors[4];
             break;
         case '1UP':
-            clr = colors[3];
+            clr = colors[5];
             break;
         case 'STK':
-            clr = colors[3];
+            clr = colors[6];
             break;
         default:
             clr = colors[0];
@@ -547,10 +547,11 @@ Powerup.prototype.draw = function() {
     }
 
     powerupGrad.addColorStop(0, clr);
-    powerupGrad.addColorStop(0.5, '#fff');
+    powerupGrad.addColorStop(0.5, '#000');
     powerupGrad.addColorStop(1, clr);
     ctx.fillStyle = powerupGrad;
 
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(this.x + 4, this.y);
     ctx.lineTo(this.x + this.width - 4, this.y);
@@ -561,15 +562,16 @@ Powerup.prototype.draw = function() {
     ctx.lineTo(this.x, this.y + this.height - 4);
     ctx.lineTo(this.x, this.y + 4);
     ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = '#fff';
+    // ctx.fill();
+    ctx.strokeStyle = clr;
     ctx.stroke();
     ctx.font = '12px Helvetica Neue, Helvetica, Arial, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#fff';
     ctx.fillText( this.type, this.x + this.width/2, this.y + this.height/2 );
 
+    ctx.lineWidth = 1;
 };
 
 /* ---------------- */
@@ -658,5 +660,7 @@ function keyDown(e) {
                 initLevel();
             }
             break;
+        case KEY_SPACE:
+            powerups.push(new Powerup(cw/2, ch/3, pickRandom(powerupTypes)));
     }
 }
