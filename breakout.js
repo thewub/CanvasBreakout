@@ -330,6 +330,24 @@ Ball.prototype.launch = function() {
     this.vy = -5;
 };
 
+Ball.prototype.split = function() {
+    /* Split for multiball */
+    balls.push(new Ball(
+        this.x,
+        this.y,
+        this.vx * 0.8,
+        this.vy,
+        stuck=false
+    ));
+    balls.push(new Ball(
+        this.x,
+        this.y,
+        this.vx * 1.2,
+        this.vy,
+        stuck=false
+    ));
+};
+
 Ball.prototype.draw = function() {
     if (this.y < ch) {
         var radgrad = ctx.createRadialGradient(
@@ -482,20 +500,7 @@ Powerup.prototype.get = function() {
         case 'MUL':
             /* Multiball */
             for (var i = balls.length - 1; i >= 0; i--) {
-                balls.push(new Ball(
-                    balls[i].x,
-                    balls[i].y,
-                    balls[i].vx * 0.8,
-                    balls[i].vy,
-                    stuck=false
-                ));
-                balls.push(new Ball(
-                    balls[i].x,
-                    balls[i].y,
-                    balls[i].vx * 1.2,
-                    balls[i].vy,
-                    stuck=false
-                ));
+                balls[i].split();
             }
             break;
         case '<->':
