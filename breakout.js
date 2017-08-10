@@ -705,9 +705,9 @@ function keyDown(e) {
                 initLevel();
             }
             break;
-        case KEY_SPACE:
-            powerups.push(new Powerup(cw/2, ch/3, pickRandom(powerupTypes)));
-            break;
+        // case KEY_SPACE:
+        //     powerups.push(new Powerup(cw/2, ch/3, pickRandom(powerupTypes)));
+        //     break;
         case KEY_M:
             // Mute or unmute
             if (gainNode.gain.value === 0) {
