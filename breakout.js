@@ -6,6 +6,14 @@ borderSide = 19;
 borderTop = 19;
 paused = false;
 
+soundBuffers = {};
+loadSound('sounds/bounce.wav', 'bounce');
+loadSound('sounds/win.wav', 'win');
+loadSound('sounds/lose.wav', 'lose');
+
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioContext = new AudioContext();
+
 balls = [];
 blocks = [];
 particles = [];
@@ -95,6 +103,7 @@ function updateLoop() {
             resetGame();
         }
         initLevel();
+        playSound(soundBuffers.win);
     }
 
     for (i = balls.length - 1; i >= 0; i--) {
@@ -249,14 +258,17 @@ Ball.prototype.update = function() {
     if (this.x - this.rad <= borderSide) {
         this.x = borderSide + this.rad;
         this.vx = -this.vx;
+        playSound(soundBuffers.bounce);
     }
     if (this.x + this.rad >= cw - borderSide) {
         this.x = cw - borderSide - this.rad;
         this.vx = -this.vx;
+        playSound(soundBuffers.bounce);
     }
     if (this.y - this.rad <= borderTop) {
         this.y = borderTop + this.rad;
         this.vy = -this.vy;
+        playSound(soundBuffers.bounce);
     }
 
     // Bounce off paddle
@@ -269,6 +281,7 @@ Ball.prototype.update = function() {
                 this.vy = -this.vy;
                 dx = this.x - (player.x + player.width/2);
                 this.vx = dx * 0.15;
+                playSound(soundBuffers.bounce);
             }
         }
     }
@@ -287,6 +300,7 @@ Ball.prototype.update = function() {
             resetBalls();
             powerups = [];
             resetPowers();
+            playSound(soundBuffers.lose);
         }
     }
 
@@ -319,6 +333,7 @@ Ball.prototype.update = function() {
                 }
             }
 
+            playSound(soundBuffers.bounce);
             block.destroy();
         }
     }
@@ -514,6 +529,7 @@ Powerup.prototype.get = function() {
             break;
     }
     this.destroy();
+    playSound(soundBuffers.win);
 };
 
 Powerup.prototype.destroy = function() {
@@ -644,6 +660,27 @@ function getPos(canvas, e) {
 function pickRandom(array) {
     /* Pick a random item from an array */
     return array[Math.floor(Math.random()*array.length)];
+}
+
+function loadSound(url, name) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+
+    // Decode asynchronously
+    request.onload = function() {
+        audioContext.decodeAudioData(request.response, function(buffer) {
+            soundBuffers[name] = buffer;
+        });
+    };
+    request.send();
+}
+
+function playSound(buffer) {
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start(0);
 }
 
 function keyDown(e) {
