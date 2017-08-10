@@ -6,13 +6,20 @@ borderSide = 19;
 borderTop = 19;
 paused = false;
 
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioContext = new AudioContext();
+
+// Volume control
+var gainNode = audioContext.createGain(); 
+gainNode.connect(audioContext.destination);
+gainNode.gain.value = 0.5;
+
 soundBuffers = {};
 loadSound('sounds/bounce.wav', 'bounce');
 loadSound('sounds/win.wav', 'win');
 loadSound('sounds/lose.wav', 'lose');
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioContext = new AudioContext();
+
 
 balls = [];
 blocks = [];
@@ -679,7 +686,7 @@ function loadSound(url, name) {
 function playSound(buffer) {
     var source = audioContext.createBufferSource();
     source.buffer = buffer;
-    source.connect(audioContext.destination);
+    source.connect(gainNode);
     source.start(0);
 }
 
