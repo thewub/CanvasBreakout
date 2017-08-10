@@ -6,6 +6,21 @@ borderSide = 19;
 borderTop = 19;
 paused = false;
 
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioContext = new AudioContext();
+
+// Volume control
+var gainNode = audioContext.createGain();
+gainNode.connect(audioContext.destination);
+gainNode.gain.value = 0.5;
+
+soundBuffers = {};
+loadSound('sounds/bounce.wav', 'bounce');
+loadSound('sounds/win.wav', 'win');
+loadSound('sounds/lose.wav', 'lose');
+
+
+
 balls = [];
 blocks = [];
 particles = [];
@@ -71,6 +86,7 @@ KEY_LEFT  = 37;
 KEY_UP    = 38;
 KEY_RIGHT = 39;
 KEY_DOWN  = 40;
+KEY_M     = 77;
 
 function game() {
 
@@ -95,6 +111,7 @@ function updateLoop() {
             resetGame();
         }
         initLevel();
+        playSound(soundBuffers.win);
     }
 
     for (i = balls.length - 1; i >= 0; i--) {
@@ -249,14 +266,17 @@ Ball.prototype.update = function() {
     if (this.x - this.rad <= borderSide) {
         this.x = borderSide + this.rad;
         this.vx = -this.vx;
+        playSound(soundBuffers.bounce);
     }
     if (this.x + this.rad >= cw - borderSide) {
         this.x = cw - borderSide - this.rad;
         this.vx = -this.vx;
+        playSound(soundBuffers.bounce);
     }
     if (this.y - this.rad <= borderTop) {
         this.y = borderTop + this.rad;
         this.vy = -this.vy;
+        playSound(soundBuffers.bounce);
     }
 
     // Bounce off paddle
@@ -269,6 +289,7 @@ Ball.prototype.update = function() {
                 this.vy = -this.vy;
                 dx = this.x - (player.x + player.width/2);
                 this.vx = dx * 0.15;
+                playSound(soundBuffers.bounce);
             }
         }
     }
@@ -287,6 +308,7 @@ Ball.prototype.update = function() {
             resetBalls();
             powerups = [];
             resetPowers();
+            playSound(soundBuffers.lose);
         }
     }
 
@@ -319,6 +341,7 @@ Ball.prototype.update = function() {
                 }
             }
 
+            playSound(soundBuffers.bounce);
             block.destroy();
         }
     }
@@ -514,6 +537,7 @@ Powerup.prototype.get = function() {
             break;
     }
     this.destroy();
+    playSound(soundBuffers.win);
 };
 
 Powerup.prototype.destroy = function() {
@@ -646,6 +670,27 @@ function pickRandom(array) {
     return array[Math.floor(Math.random()*array.length)];
 }
 
+function loadSound(url, name) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+
+    // Decode asynchronously
+    request.onload = function() {
+        audioContext.decodeAudioData(request.response, function(buffer) {
+            soundBuffers[name] = buffer;
+        });
+    };
+    request.send();
+}
+
+function playSound(buffer) {
+    var source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(gainNode);
+    source.start(0);
+}
+
 function keyDown(e) {
     switch (e.keyCode) {
         case KEY_LEFT:
@@ -662,5 +707,14 @@ function keyDown(e) {
             break;
         case KEY_SPACE:
             powerups.push(new Powerup(cw/2, ch/3, pickRandom(powerupTypes)));
+            break;
+        case KEY_M:
+            // Mute or unmute
+            if (gainNode.gain.value === 0) {
+                gainNode.gain.value = 0.5;
+            } else {
+                gainNode.gain.value = 0;
+            }
+            break;
     }
 }
