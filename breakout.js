@@ -10,7 +10,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = new AudioContext();
 
 // Volume control
-var gainNode = audioContext.createGain(); 
+var gainNode = audioContext.createGain();
 gainNode.connect(audioContext.destination);
 gainNode.gain.value = 0.5;
 
@@ -86,6 +86,7 @@ KEY_LEFT  = 37;
 KEY_UP    = 38;
 KEY_RIGHT = 39;
 KEY_DOWN  = 40;
+KEY_M     = 77;
 
 function game() {
 
@@ -706,5 +707,14 @@ function keyDown(e) {
             break;
         case KEY_SPACE:
             powerups.push(new Powerup(cw/2, ch/3, pickRandom(powerupTypes)));
+            break;
+        case KEY_M:
+            // Mute or unmute
+            if (gainNode.gain.value === 0) {
+                gainNode.gain.value = 0.5;
+            } else {
+                gainNode.gain.value = 0;
+            }
+            break;
     }
 }
