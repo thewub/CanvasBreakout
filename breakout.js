@@ -18,7 +18,7 @@ soundBuffers = {};
 loadSound('sounds/bounce.wav', 'bounce');
 loadSound('sounds/win.wav', 'win');
 loadSound('sounds/lose.wav', 'lose');
-
+loadSound('sounds/blockDestroy.wav', 'blockDestroy');
 
 
 balls = [];
@@ -471,6 +471,8 @@ Block.prototype.destroy = function() {
 
     var j = blocks.indexOf(this);
     blocks.splice(j, 1);
+    playSound(soundBuffers.blockDestroy);
+
 };
 
 Block.prototype.draw = function() {

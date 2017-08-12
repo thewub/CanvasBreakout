@@ -1,0 +1,4 @@
+https://www.leshylabs.com/apps/sfMaker/
+
+block destroy
+W=22050,f=3520,t=238.956,T=0.104,_=0.101,d=286.183,D=0.259,p=1.484,b=0,r=0.4,s=14,S=188.804,z=Down,g=0.758,l=0.447,L=0.4
