@@ -479,9 +479,11 @@ Block.prototype.draw = function() {
     var blockGrad = ctx.createLinearGradient(
         this.x, this.y, this.x, this.y + 20
     );
-    blockGrad.addColorStop(0, this.clr);
-    blockGrad.addColorStop(0.2, '#fff');
-    blockGrad.addColorStop(1, this.clr);
+    blockGrad.addColorStop(0, 'rgba(255,255,255,0)');
+    blockGrad.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+    blockGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = this.clr;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = blockGrad;
     ctx.fillRect(this.x, this.y, this.width, this.height);
 
