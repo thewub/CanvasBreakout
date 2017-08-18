@@ -4,7 +4,7 @@ cw = canvas.width;
 ch = canvas.height;
 borderSide = 19;
 borderTop = 19;
-paused = false;
+gameState = 'main';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = new AudioContext();
@@ -19,7 +19,6 @@ loadSound('sounds/bounce.wav', 'bounce');
 loadSound('sounds/win.wav', 'win');
 loadSound('sounds/lose.wav', 'lose');
 loadSound('sounds/blockDestroy.wav', 'blockDestroy');
-
 
 balls = [];
 blocks = [];
@@ -90,11 +89,14 @@ KEY_M     = 77;
 
 function game() {
 
-    if ( document.hasFocus() ) {
-        paused = false;
-        updateLoop();
+    if ( !document.hasFocus() ) {
+        gameState = 'unfocused';
     } else {
-        paused = true;
+        gameState = 'main';
+    }
+
+    if ( gameState === 'main' ) {
+        updateLoop();
     }
 
     drawLoop();
@@ -213,7 +215,7 @@ function drawLoop() {
     ctx.textAlign = 'right';
     ctx.fillText( 'Level: ' + level, cw - borderSide, 1 );
 
-    if (paused) {
+    if ( gameState === 'unfocused' ) {
         ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -640,7 +642,7 @@ function mouseDown(e) {
 }
 
 function playerMove(e) {
-    if (!paused) {
+    if ( gameState === 'main' ) {
         var x = getPos(canvas, e).x - player.width/2;
         if (x <= borderSide) {
             player.x = borderSide;
