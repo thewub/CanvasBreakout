@@ -86,12 +86,15 @@ KEY_UP    = 38;
 KEY_RIGHT = 39;
 KEY_DOWN  = 40;
 KEY_M     = 77;
+KEY_P     = 80;
 
 function game() {
 
     if ( !document.hasFocus() ) {
         gameState = 'unfocused';
-    } else {
+    }
+
+    if ( gameState === 'unfocused' && document.hasFocus() ) {
         gameState = 'main';
     }
 
@@ -215,7 +218,7 @@ function drawLoop() {
     ctx.textAlign = 'right';
     ctx.fillText( 'Level: ' + level, cw - borderSide, 1 );
 
-    if ( gameState === 'unfocused' ) {
+    if ( gameState === 'unfocused' || gameState === 'paused' ) {
         ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -720,6 +723,13 @@ function keyDown(e) {
                 gainNode.gain.value = 0.5;
             } else {
                 gainNode.gain.value = 0;
+            }
+            break;
+        case KEY_P:
+            if ( gameState === 'main' ) {
+                gameState = 'paused';
+            } else if ( gameState === 'paused' ) {
+                gameState = 'main';
             }
             break;
     }
