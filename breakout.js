@@ -3,7 +3,7 @@ ctx = canvas.getContext('2d');
 cw = canvas.width;
 ch = canvas.height;
 borderSide = 19;
-borderTop = 19;
+borderTop = 29;
 gameState = 'main';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -56,17 +56,17 @@ gradients.background.addColorStop(1, 'rgba(255,255,255,0)');
 
 gradients.borderTop = ctx.createLinearGradient(0, 0, 0, borderTop);
 gradients.borderTop.addColorStop(0, '#666');
-gradients.borderTop.addColorStop(0.2, '#fff');
+gradients.borderTop.addColorStop(0.8, '#fff');
 gradients.borderTop.addColorStop(1, '#666');
 
 gradients.borderLeft = ctx.createLinearGradient(0, 0, borderSide, 0);
 gradients.borderLeft.addColorStop(0, '#666');
-gradients.borderLeft.addColorStop(0.2, '#fff');
+gradients.borderLeft.addColorStop(0.8, '#fff');
 gradients.borderLeft.addColorStop(1, '#666');
 
 gradients.borderRight = ctx.createLinearGradient(cw, 0, cw - borderSide, 0);
 gradients.borderRight.addColorStop(0, '#666');
-gradients.borderRight.addColorStop(0.2, '#fff');
+gradients.borderRight.addColorStop(0.8, '#fff');
 gradients.borderRight.addColorStop(1, '#666');
 
 window.onload = function() {
@@ -216,11 +216,11 @@ function drawLoop() {
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#000';
     ctx.textAlign = 'left';
-    ctx.fillText( 'Score: ' + score, borderSide, 1 );
+    ctx.fillText( 'Score: ' + score, borderSide, 5 );
     ctx.textAlign = 'center';
-    ctx.fillText( 'Lives: ' + lives, cw/2, 1 );
+    ctx.fillText( 'Lives: ' + lives, cw/2, 5 );
     ctx.textAlign = 'right';
-    ctx.fillText( 'Level: ' + level, cw - borderSide, 1 );
+    ctx.fillText( 'Level: ' + level, cw - borderSide, 5 );
 
     if ( gameState === 'unfocused' || gameState === 'paused' ) {
         ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
