@@ -572,7 +572,7 @@ Powerup.prototype.draw = function() {
             clr = colors[5];
             break;
         case 'STK':
-            clr = colors[6];
+            clr = colors[3];
             break;
         default:
             clr = colors[0];
