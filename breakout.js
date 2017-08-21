@@ -187,6 +187,10 @@ function drawLoop() {
     ctx.fillStyle = lingrad;
     ctx.fillRect(player.x, player.y, player.width, player.height);
 
+    ctx.fillStyle = '#666';
+    ctx.fillRect(player.x + player.width/5, player.y, 2, player.height);
+    ctx.fillRect(player.x + (4*player.width/5), player.y, 2, player.height);
+
     if (powerTimers.stickyPaddle > 0) {
         ctx.fillStyle = colors[3];
         ctx.fillRect(player.x, player.y, player.width, 4);
