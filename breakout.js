@@ -185,7 +185,7 @@ function drawLoop() {
     lingrad.addColorStop(0.2, '#fff');
     lingrad.addColorStop(1, '#666');
     ctx.fillStyle = lingrad;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+    ctx.fillRect(player.x + 1, player.y, player.width - 2, player.height);
 
     ctx.fillStyle = '#666';
     ctx.fillRect(player.x + player.width/5, player.y, 2, player.height);
