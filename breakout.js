@@ -569,9 +569,6 @@ Powerup.prototype.destroy = function() {
 
 Powerup.prototype.draw = function() {
 
-    var powerupGrad = ctx.createLinearGradient(
-        this.x, this.y, this.x, this.y + this.height
-    );
     var clr;
 
     switch( this.type ) {
@@ -592,11 +589,6 @@ Powerup.prototype.draw = function() {
             break;
     }
 
-    powerupGrad.addColorStop(0, clr);
-    powerupGrad.addColorStop(0.5, '#000');
-    powerupGrad.addColorStop(1, clr);
-    ctx.fillStyle = powerupGrad;
-
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(this.x + 4, this.y);
@@ -608,7 +600,6 @@ Powerup.prototype.draw = function() {
     ctx.lineTo(this.x, this.y + this.height - 4);
     ctx.lineTo(this.x, this.y + 4);
     ctx.closePath();
-    // ctx.fill();
     ctx.strokeStyle = clr;
     ctx.stroke();
     ctx.font = '12px Helvetica Neue, Helvetica, Arial, sans-serif';
