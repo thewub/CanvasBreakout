@@ -212,6 +212,13 @@ function drawLoop() {
     ctx.fill();
 
     // Text
+    ctx.save();
+
+    ctx.shadowColor = '#fff';
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowOffsetX = 0;
+
     ctx.font = '16px Helvetica Neue, Helvetica, Arial, sans-serif';
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#000';
@@ -221,6 +228,8 @@ function drawLoop() {
     ctx.fillText( 'Lives: ' + lives, cw/2, 5 );
     ctx.textAlign = 'right';
     ctx.fillText( 'Level: ' + level, cw - borderSide, 5 );
+
+    ctx.restore();
 
     if ( gameState === 'unfocused' || gameState === 'paused' ) {
         ctx.font = 'bold 28px Helvetica Neue, Helvetica, Arial, sans-serif';
