@@ -589,7 +589,15 @@ Powerup.prototype.draw = function() {
             break;
     }
 
+    ctx.save();
+
     ctx.lineWidth = 2;
+    ctx.strokeStyle = clr;
+    ctx.shadowColor = clr;
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
     ctx.beginPath();
     ctx.moveTo(this.x + 4, this.y);
     ctx.lineTo(this.x + this.width - 4, this.y);
@@ -600,15 +608,15 @@ Powerup.prototype.draw = function() {
     ctx.lineTo(this.x, this.y + this.height - 4);
     ctx.lineTo(this.x, this.y + 4);
     ctx.closePath();
-    ctx.strokeStyle = clr;
     ctx.stroke();
+
+    ctx.restore();
+
     ctx.font = '12px Helvetica Neue, Helvetica, Arial, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.fillText( this.type, this.x + this.width/2, this.y + this.height/2 );
-
-    ctx.lineWidth = 1;
+    ctx.fillText( this.type, this.x + this.width/2, this.y + this.height/2 + 1 );
 };
 
 /* ---------------- */
