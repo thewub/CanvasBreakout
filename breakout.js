@@ -192,8 +192,12 @@ function drawLoop() {
     ctx.fillRect(player.x + (4*player.width/5), player.y, 2, player.height);
 
     if (powerTimers.stickyPaddle > 0) {
-        ctx.fillStyle = colors[3];
-        ctx.fillRect(player.x, player.y, player.width, 4);
+        lingrad = ctx.createLinearGradient(0, player.y, 0, player.y + 5);
+        lingrad.addColorStop(0, colors[3]);
+        lingrad.addColorStop(0.2, '#fff');
+        lingrad.addColorStop(1, colors[3]);
+        ctx.fillStyle = lingrad;
+        ctx.fillRect(player.x + 1, player.y, player.width - 2, 5);
     }
 
     // Draw borders
