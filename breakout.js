@@ -50,7 +50,7 @@ bgImage.onload = function() {
 // Pre-prepare some unchanging gradients
 gradients = {};
 
-gradients.background = ctx.createLinearGradient(0,0,0,ch);
+gradients.background = ctx.createRadialGradient(cw/2, 0, 0, cw/2, 0, cw/2, ch);
 gradients.background.addColorStop(0, 'rgba(255,255,255,0.2)');
 gradients.background.addColorStop(1, 'rgba(255,255,255,0)');
 
