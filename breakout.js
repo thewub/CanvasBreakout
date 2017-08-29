@@ -107,17 +107,6 @@ function game() {
 }
 
 function updateLoop() {
-    if ( blocks.length === 0 ) {
-        level++;
-        if (level >= levels.length) {
-            console.log(level, blocks);
-            window.alert('A winner is you!');
-            level = 1;
-            resetGame();
-        }
-        initLevel();
-        playSound(soundBuffers.win);
-    }
 
     for (i = balls.length - 1; i >= 0; i--) {
         balls[i].update();
@@ -475,25 +464,41 @@ function Block(x, y, clr) {
 }
 
 Block.prototype.destroy = function() {
-    // Asplode
-    for (var i = 0; i < 10; i++) {
-        particles.push(new Particle(
-            this.x + this.width/2,
-            this.y + this.height/2,
-            Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
-            this.clr, 60
-        ));
-    }
 
     score += 10;
 
-    if ( Math.random() > 0.8 ) {
-        powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
-    }
-
     var j = blocks.indexOf(this);
     blocks.splice(j, 1);
-    playSound(soundBuffers.blockDestroy);
+
+    if ( blocks.length === 0 ) {
+        playSound(soundBuffers.win);
+        level++;
+        if (level >= levels.length) {
+            console.log(level, blocks);
+            window.alert('A winner is you!');
+            level = 1;
+            resetGame();
+        }
+        initLevel();
+    } else {
+
+        // Asplode
+        for (var i = 0; i < 10; i++) {
+            particles.push(new Particle(
+                this.x + this.width/2,
+                this.y + this.height/2,
+                Math.random()*2 - 1, Math.random()*2 - 1, // vx, vy
+                this.clr, 60
+            ));
+        }
+
+        if ( Math.random() > 0.8 ) {
+            powerups.push(new Powerup(this.x+5, this.y, pickRandom(powerupTypes)));
+        }
+        
+        playSound(soundBuffers.blockDestroy);
+
+    }
 
 };
 
