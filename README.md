@@ -6,11 +6,12 @@ Just a quick exercise to teach myself HTML `<canvas>` and game development.
 
 - [x] Refactor code into classes
 - [x] Powerups
-- [ ] Multiple hit blocks?
 - [x] Add more levels (and cheat mode for skipping?)
-- [ ] Menu / pausing
-- [ ] Add sound
+- [x] Pausing
+- [x] Add sound
 - [x] Working on phones/tablets
+- [ ] Menu
+- [ ] Multiple hit blocks?
 - [ ] Use requestAnimationFrame()
 - [ ] Rework ball physics
 
