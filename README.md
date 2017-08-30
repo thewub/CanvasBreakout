@@ -19,4 +19,5 @@ Just a quick exercise to teach myself HTML `<canvas>` and game development.
 
 ## Credits
 
-Background pattern from subtlepatterns.com
+- Background pattern from [Subtle Patterns](https://www.toptal.com/designers/subtlepatterns/)
+- Sounds made with [Leshy SFMaker](https://www.leshylabs.com/apps/sfMaker/)
